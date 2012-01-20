@@ -22,6 +22,7 @@
 /*!\file    tCanvas.cpp
  *
  * \author  Max Reichardt
+ * \author  Tobias Föhst
  *
  * \date    2012-01-09
  *
@@ -57,37 +58,51 @@ using namespace rrlib::canvas;
 //----------------------------------------------------------------------
 // Implementation
 //----------------------------------------------------------------------
+
+//----------------------------------------------------------------------
+// tCanvas constructors
+//----------------------------------------------------------------------
 tCanvas::tCanvas() :
     buffer(),
     stream(&buffer)
-{
-}
+{}
 
-
+//----------------------------------------------------------------------
+// tCanvas AppendCommandRaw
+//----------------------------------------------------------------------
 void tCanvas::AppendCommandRaw(tCanvasOpCode opcode, void* buffer, size_t bytes)
 {
-  stream << opcode;
+  this->stream << opcode;
   if (buffer)
   {
-    stream.Write(buffer, bytes);
+    this->stream.Write(buffer, bytes);
   }
 }
 
+//----------------------------------------------------------------------
+// tCanvas Clear
+//----------------------------------------------------------------------
 void tCanvas::Clear()
 {
-  buffer.Clear();
-  stream.Reset(&buffer);
+  this->buffer.Clear();
+  this->stream.Reset(&this->buffer);
 }
 
+//----------------------------------------------------------------------
+// tCanvas Deserialize
+//----------------------------------------------------------------------
 void tCanvas::Deserialize(rrlib::serialization::tInputStream& is)
 {
-  is >> buffer;
+  is >> this->buffer;
 }
 
+//----------------------------------------------------------------------
+// tCanvas Serialize
+//----------------------------------------------------------------------
 void tCanvas::Serialize(rrlib::serialization::tOutputStream& os) const
 {
-  os.WriteInt(stream.GetWriteSize());
-  os.Write(*buffer.GetBuffer(), 0u, stream.GetWriteSize());
+  os.WriteInt(this->stream.GetWriteSize());
+  os.Write(*this->buffer.GetBuffer(), 0u, this->stream.GetWriteSize());
 }
 
 

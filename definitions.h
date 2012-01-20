@@ -22,6 +22,7 @@
 /*!\file    definitions.h
  *
  * \author  Max Reichardt
+ * \author  Tobias Föhst
  *
  * \date    2012-01-10
  *
@@ -61,7 +62,8 @@ namespace canvas
 /*!
  * OpCodes when serializing canvas.
  *
- * [vector] and [point] are 2 coordinates in 2D and 3 coordinates in 3D mode.
+ * [vector] is 2 coordinates in 2D and 3 coordinates in 3D mode.
+ * K is 2 in 2D and 3 in 3D mode.
  * Values are encoded as float or double depending on canvas mode.
  */
 enum tCanvasOpCode
@@ -69,50 +71,48 @@ enum tCanvasOpCode
   // ####### tCanvas-supported opcodes ########
 
   // Transformation operations
-  eSET_TRANSFORM_2D,  // [m00, m10, m01, m11, m02, m12]
-  eTRANSFORM_2D,      // [m00, m10, m01, m11, m02, m12]
-  eTRANSLATE_2D,      // [2D-vector]
-  eTRANSLATE_3D,      // [3D-vector]
-  eROTATE_2D,         // [yaw]
-  eSCALE_2D,          // [2D-vector]
-  eRESET_TRANSFORM,   // []
+  eSET_TRANSFORMATION,      // [(K+1)x(K+1) matrix]
+  eTRANSFORM,               // [(K+1)x(K+1) matrix]
+  eTRANSLATE,               // [vector]
+  eROTATE,                  // [yaw]
+  eSCALE,                   // [vector]
+  eRESET_TRANSFORMATION,    // []
 
   // Canvas, Draw & encoding mode
-  eSET_COLOR,         // [RGB: 3 bytes]
-  eSET_EDGE_COLOR,    // [RGB: 3 bytes]
-  eSET_FILL_COLOR,    // [RGB: 3 bytes]
-  eSET_FILL,          // [bool]
-  eSET_Z,             // [value]
+  eSET_COLOR_RGB,           // [RGB: 3 bytes]
+  eSET_COLOR_RGBA,          // [RGBA: 4 bytes]
+  eSET_EDGE_COLOR_RGB,      // [RGB: 3 bytes]
+  eSET_EDGE_COLOR_RGBA,     // [RGBA: 4 bytes]
+  eSET_FILL_COLOR_RGB,      // [RGB: 3 bytes]
+  eSET_FILL_COLOR_RGBA,     // [RGBA: 4 bytes]
+  eSET_FILL,                // [bool]
 
   // Geometry primitives
-  eDRAW_POINT_2D,              // [2D-vector]
-  eDRAW_LINE_2D,               // [2D-point][2D-point]
-  eDRAW_RECTANGLE,             // [2D-point][width][height]
-  eDRAW_ELLIPSE,               // [2D-point][width][height]
-  eDRAW_POLYGON_2D,            // [number of values][2D-vector1]...[2D-vectorN]
-  eDRAW_SPLINE_2D,             // [number of values][2D-vector1]...[2D-vectorN]  (bezier spline)
-  eDRAW_STRING_2D,             // [2D-point][null-terminated chars]
-  eDRAW_CUBIC_BEZIER_CURVE_2D, // [2D-point][2D-point][2D-point][2D-point]
+  eDRAW_POINT,              // [vector]
+  eDRAW_LINE,               // [vector][vector]
+  eDRAW_BOX,                // [vector][size1]...[sizeN]
+  eDRAW_ELLIPSOID,          // [vector][diameter1]...[diameterN]
+  eDRAW_POLYGON,            // [number of values: N][vector1]...[vectorN]
+  eDRAW_SPLINE,             // [number of values: N][tension-parameter][vector1]...[vectorN]  (uniform b-spline)
+  eDRAW_CUBIC_BEZIER_CURVE, // [vector][vector][vector][vector]
+  eDRAW_STRING,             // [vector][null-terminated chars]
 
   // Custom path/shape
-  ePATH_2D_START,       // [2D-point][bool shape?]
-  ePATH_2D_LINE,        // [2D-point]
-  ePATH_2D_QUAD_CURVE,  // [2D-point][2D-point]
-  ePATH_2D_CUBIC_CURVE, // [2D-point][2D-point][2D-point]
+  ePATH_START,              // [point]
+  ePATH_END_OPEN,           // [point]
+  ePATH_END_CLOSED,         // [point]
+  ePATH_LINE,               // [point]
+  ePATH_QUADRATIC_CURVE,    // [point][point]
+  ePATH_CUBIC_CURVE,        // [point][point][point]
 
   // ####### tCanvas2D-only opcodes ########
 
+  // Canvas, Draw & encoding mode
+  eSET_Z,                   // [value]
+  eSET_EXTRUSION            // [value]
 
   // ####### tCanvas3D-only opcodes ########
-  eSET_TRANSFORM_3D, // [m00, m10, m20, m01, m11, m21, m02, m12, m22, m03, m13, m23]
-  eTRANSFORM_3D,     // [m00, m10, m20, m01, m11, m21, m02, m12, m22, m03, m13, m23]
-  eROTATE_3D,        // [roll, pitch, yaw]
-  eSCALE_3D,         // [3D-vector]
 
-  eSET_EXTRUSION,    // {value]
-  eDRAW_POINT_3D,    // [3D-vector]
-  eDRAW_LINE_3D,     // [3D-point][3D-point]
-  eDRAW_POLYGON_3D   // [number of values][3D-vector1]...[3D-vectorN]
 };
 
 enum tNumberTypeEnum

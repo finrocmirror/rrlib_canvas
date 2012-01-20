@@ -4,8 +4,9 @@
 
   <rrlib name="canvas">
     <sources>
-      *.cpp
-      *.h
+      definitions.h
+      tCanvas.cpp
+      tCanvas2D.h
     </sources>
   </rrlib>
 
