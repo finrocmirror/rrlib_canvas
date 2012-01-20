@@ -38,6 +38,8 @@
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
+#include <type_traits>
+
 #include "rrlib/serialization/tMemoryBuffer.h"
 #include "rrlib/serialization/tOutputStream.h"
 #include "rrlib/math/tVector.h"
@@ -113,43 +115,43 @@ public:
   /*!
    * Set the canvas' fill and edge color
    */
-  void SetColorRGB(uint8_t r, uint8_t g, uint8_t b)
+  void SetColor(uint8_t r, uint8_t g, uint8_t b)
   {
     uint8_t buffer[] = { r, g, b };
-    this->AppendCommandRaw(eSET_COLOR_RGB, buffer, sizeof(buffer));
+    this->AppendCommandRaw(eSET_COLOR, buffer, sizeof(buffer));
   }
-  void SetColorRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+  void SetColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
   {
-    uint8_t buffer[] = { r, g, b, a };
-    this->AppendCommandRaw(eSET_COLOR_RGBA, buffer, sizeof(buffer));
+    this->SetColor(r, g, b);
+    this->SetAlpha(a);
   }
 
   /*!
    * Set the canvas' color for edges
    */
-  void SetEdgeColorRGB(uint8_t r, uint8_t g, uint8_t b)
+  void SetEdgeColor(uint8_t r, uint8_t g, uint8_t b)
   {
     uint8_t buffer[] = { r, g, b };
-    this->AppendCommandRaw(eSET_EDGE_COLOR_RGB, buffer, sizeof(buffer));
+    this->AppendCommandRaw(eSET_EDGE_COLOR, buffer, sizeof(buffer));
   }
-  void SetEdgeColorRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+  void SetEdgeColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
   {
-    uint8_t buffer[] = { r, g, b, a };
-    this->AppendCommandRaw(eSET_EDGE_COLOR_RGBA, buffer, sizeof(buffer));
+    this->SetEdgeColor(r, g, b);
+    this->SetAlpha(a);
   }
 
   /*!
    * Set the canvas' color for filling
    */
-  void SetFillColorRGB(uint8_t r, uint8_t g, uint8_t b)
+  void SetFillColor(uint8_t r, uint8_t g, uint8_t b)
   {
     uint8_t buffer[] = { r, g, b };
-    this->AppendCommandRaw(eSET_FILL_COLOR_RGB, buffer, sizeof(buffer));
+    this->AppendCommandRaw(eSET_FILL_COLOR, buffer, sizeof(buffer));
   }
-  void SetFillColorRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+  void SetFillColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
   {
-    uint8_t buffer[] = { r, g, b, a };
-    this->AppendCommandRaw(eSET_FILL_COLOR_RGBA, buffer, sizeof(buffer));
+    this->SetFillColor(r, g, b);
+    this->SetAlpha(a);
   }
 
   /*!
@@ -159,6 +161,14 @@ public:
   {
     uint8_t buffer = fill_objects ? 1 : 0;
     this->AppendCommandRaw(eSET_FILL, &buffer, 1);
+  }
+
+  /*!
+   * Set the canvas' alpha channel
+   */
+  void SetAlpha(uint8_t alpha)
+  {
+    this->AppendCommandRaw(eSET_ALPHA, &alpha, sizeof(alpha));
   }
 
   /*!
@@ -194,10 +204,10 @@ protected:
    * \param value_count Number of values in buffer
    */
   template <typename T>
-  inline void AppendCommand(tCanvasOpCode opcode, T* values, size_t value_count)
+  inline void AppendCommand(tCanvasOpCode opcode, const T *values, size_t value_count)
   {
     // TODO could be optimized
-    this->stream << ((uint8_t)opcode) << ((uint8_t)tNumberType<T>::value);
+    this->stream << static_cast<uint8_t>(opcode) << static_cast<uint8_t>(tNumberType<T>::value);
     this->stream.Write(values, value_count * sizeof(T));
   }
 
@@ -209,6 +219,21 @@ protected:
    * \param bytes Size in bytes of raw buffer
    */
   void AppendCommandRaw(tCanvasOpCode opcode, void* buffer = NULL, size_t bytes = 0);
+
+  /*!
+   * Adds raw data to canvas data
+   */
+  template <typename TIterator>
+  inline void AppendData(TIterator data_begin, TIterator data_end)
+  {
+    typedef typename std::remove_reference < decltype(*data_begin) >::type tData;
+    typedef typename std::conditional<std::is_fundamental<tData>::value, tData, typename tData::tElement>::type tElement;
+    this->stream << static_cast<uint8_t>(tNumberType<tElement>::value);
+    std::for_each(data_begin, data_end, [this](const tData &vector)
+    {
+      this->stream.Write(&vector, sizeof(tData));
+    });
+  }
 
 //----------------------------------------------------------------------
 // Protected methods

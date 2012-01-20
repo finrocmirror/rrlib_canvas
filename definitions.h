@@ -79,17 +79,16 @@ enum tCanvasOpCode
   eRESET_TRANSFORMATION,    // []
 
   // Canvas, Draw & encoding mode
-  eSET_COLOR_RGB,           // [RGB: 3 bytes]
-  eSET_COLOR_RGBA,          // [RGBA: 4 bytes]
-  eSET_EDGE_COLOR_RGB,      // [RGB: 3 bytes]
-  eSET_EDGE_COLOR_RGBA,     // [RGBA: 4 bytes]
-  eSET_FILL_COLOR_RGB,      // [RGB: 3 bytes]
-  eSET_FILL_COLOR_RGBA,     // [RGBA: 4 bytes]
+  eSET_COLOR,               // [RGB: 3 bytes]
+  eSET_EDGE_COLOR,          // [RGB: 3 bytes]
+  eSET_FILL_COLOR,          // [RGB: 3 bytes]
   eSET_FILL,                // [bool]
+  eSET_ALPHA,               // [1 byte]
 
   // Geometry primitives
   eDRAW_POINT,              // [vector]
   eDRAW_LINE,               // [vector][vector]
+  eDRAW_LINE_SEGMENT,       // [vector][vector]
   eDRAW_BOX,                // [vector][size1]...[sizeN]
   eDRAW_ELLIPSOID,          // [vector][diameter1]...[diameterN]
   eDRAW_POLYGON,            // [number of values: N][vector1]...[vectorN]

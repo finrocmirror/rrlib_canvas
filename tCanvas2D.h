@@ -159,6 +159,15 @@ public:
   inline void DrawLine(const math::tVector<2, T> &p1, const math::tVector<2, T> &p2);
 
   /*!
+   * Draw Line Segment
+   */
+  template <typename T>
+  void DrawLineSegment(T x1, T y1, T x2, T y2);
+
+  template <typename T>
+  inline void DrawLineSegment(const math::tVector<2, T> &p1, const math::tVector<2, T> &p2);
+
+  /*!
    * Draw Box
    */
   template <typename T>
@@ -186,7 +195,7 @@ public:
    * Draw Spline
    */
   template <typename TIterator>
-  void DrawSpline(TIterator points_begin, TIterator points_end);
+  void DrawSpline(TIterator points_begin, TIterator points_end, float tension = 0.0);
 
   /*!
    * Draw Cubic Bezier curve
@@ -224,7 +233,7 @@ public:
 
   /*!
    * Append a line to the specified point to the current path or shape edge.
-   * (Only valid after having started a path or shape) FIXME: Could be realized in a more secure way by using a proxy object of type tPath
+   * (Only valid after having started a path or shape)
    */
   template <typename T>
   void AppendLineSegment(T x, T y);

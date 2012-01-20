@@ -32,6 +32,7 @@
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
+#include "rrlib/logging/messages.h"
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -112,7 +113,7 @@ void tCanvas2D::Translate(T x, T y)
 template <typename T>
 void tCanvas2D::Translate(const math::tVector<2, T> &v)
 {
-  this->AppendCommand(eTRANSLATE, reinterpret_cast<T *>(&v), 2);
+  this->AppendCommand(eTRANSLATE, reinterpret_cast<const T *>(&v), 2);
 }
 
 //----------------------------------------------------------------------
@@ -137,7 +138,7 @@ void tCanvas2D::Scale(T x, T y)
 template <typename T>
 void tCanvas2D::Scale(const math::tVector<2, T> &v)
 {
-  this->AppendCommand(eSCALE, reinterpret_cast<T *>(&v), 2);
+  this->AppendCommand(eSCALE, reinterpret_cast<const T *>(&v), 2);
 }
 
 //----------------------------------------------------------------------
@@ -163,7 +164,7 @@ void tCanvas2D::DrawPoint(T x, T y)
 template <typename T>
 void tCanvas2D::DrawPoint(const math::tVector<2, T> &v)
 {
-  this->AppendCommand(eDRAW_POINT, reinterpret_cast<T *>(&v), 2);
+  this->AppendCommand(eDRAW_POINT, reinterpret_cast<const T *>(&v), 2);
 }
 
 //----------------------------------------------------------------------
@@ -179,6 +180,23 @@ void tCanvas2D::DrawLine(T x1, T y1, T x2, T y2)
 
 template <typename T>
 void tCanvas2D::DrawLine(const math::tVector<2, T> &p1, const math::tVector<2, T> &p2)
+{
+  this->DrawLine(p1.X(), p1.Y(), p2.X(), p2.Y());
+}
+
+//----------------------------------------------------------------------
+// tCanvas2D DrawLineSegment
+//----------------------------------------------------------------------
+template <typename T>
+void tCanvas2D::DrawLineSegment(T x1, T y1, T x2, T y2)
+{
+  this->in_path_mode = false;
+  T values[] = { x1, y1, x2, y2 };
+  this->AppendCommand(eDRAW_LINE_SEGMENT, values, 4);
+}
+
+template <typename T>
+void tCanvas2D::DrawLineSegment(const math::tVector<2, T> &p1, const math::tVector<2, T> &p2)
 {
   this->DrawLine(p1.X(), p1.Y(), p2.X(), p2.Y());
 }
@@ -224,23 +242,22 @@ template <typename TIterator>
 void tCanvas2D::DrawPolygon(TIterator points_begin, TIterator points_end)
 {
   this->in_path_mode = false;
-  typedef decltype(*points_begin) tPoint;
-  const std::vector<tPoint> points(points_begin, points_end);
-  this->Stream().WriteShort(points.size());
-  this->AppendCommand(eDRAW_POLYGON, reinterpret_cast<tPoint *>(points.data()), points.size());
+  this->AppendCommandRaw(eDRAW_POLYGON);
+  this->Stream().WriteShort(std::distance(points_begin, points_end));
+  this->AppendData(points_begin, points_end);
 }
 
 //----------------------------------------------------------------------
 // tCanvas2D DrawSpline
 //----------------------------------------------------------------------
 template <typename TIterator>
-void tCanvas2D::DrawSpline(TIterator points_begin, TIterator points_end)
+void tCanvas2D::DrawSpline(TIterator points_begin, TIterator points_end, float tension)
 {
   this->in_path_mode = false;
-  typedef decltype(*points_begin) tPoint;
-  const std::vector<tPoint> points(points_begin, points_end);
-  this->Stream().WriteShort(points.size());
-  this->AppendCommand(eDRAW_SPLINE, reinterpret_cast<tPoint *>(points.data()), points.size());
+  this->AppendCommandRaw(eDRAW_SPLINE);
+  this->Stream().WriteFloat(tension);
+  this->Stream().WriteShort(std::distance(points_begin, points_end));
+  this->AppendData(points_begin, points_end);
 }
 
 //----------------------------------------------------------------------
@@ -250,10 +267,9 @@ template <typename TIterator>
 void tCanvas2D::DrawCubicBezierCurve(TIterator points_begin, TIterator points_end)
 {
   this->in_path_mode = false;
-  typedef decltype(*points_begin) tPoint;
-  const std::vector<tPoint> points(points_begin, points_end);
-  assert(points.size() == 4);
-  this->AppendCommand(eDRAW_CUBIC_BEZIER_CURVE, reinterpret_cast<tPoint *>(points.data()), points.size());
+  assert(std::distance(points_begin, points_end) == 4);
+  this->AppendCommandRaw(eDRAW_CUBIC_BEZIER_CURVE);
+  this->AppendData(points_begin, points_end);
 }
 
 template <typename T>
@@ -269,6 +285,11 @@ void tCanvas2D::DrawCubicBezierCurve(const math::tVector<2, T> &p1, const math::
 template <typename T>
 void tCanvas2D::StartPath(T x, T y)
 {
+  if (!this->in_path_mode)
+  {
+    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Already in path mode. Command has no effect.");
+    return;
+  }
   T values[] = { x, y };
   this->AppendCommand(ePATH_START, values, 2);
   this->Stream().WriteBoolean(false);
@@ -287,6 +308,11 @@ void tCanvas2D::StartPath(const math::tVector<2, T> &p)
 template <typename T>
 void tCanvas2D::StartShape(T x, T y)
 {
+  if (!this->in_path_mode)
+  {
+    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Already in path mode. Command has no effect.");
+    return;
+  }
   T values[] = { x, y };
   this->AppendCommand(ePATH_START, values, 2);
   this->Stream().WriteBoolean(true);
