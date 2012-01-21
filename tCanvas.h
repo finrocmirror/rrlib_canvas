@@ -165,6 +165,8 @@ public:
 
   /*!
    * Set the canvas' alpha channel
+   *
+   * \param alpha A value of 0 will make the following objects completely transparent - 255 completely opaque.
    */
   void SetAlpha(uint8_t alpha)
   {

@@ -285,11 +285,6 @@ void tCanvas2D::DrawCubicBezierCurve(const math::tVector<2, T> &p1, const math::
 template <typename T>
 void tCanvas2D::StartPath(T x, T y)
 {
-  if (!this->in_path_mode)
-  {
-    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Already in path mode. Command has no effect.");
-    return;
-  }
   T values[] = { x, y };
   this->AppendCommand(ePATH_START, values, 2);
   this->Stream().WriteBoolean(false);
@@ -308,11 +303,6 @@ void tCanvas2D::StartPath(const math::tVector<2, T> &p)
 template <typename T>
 void tCanvas2D::StartShape(T x, T y)
 {
-  if (!this->in_path_mode)
-  {
-    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Already in path mode. Command has no effect.");
-    return;
-  }
   T values[] = { x, y };
   this->AppendCommand(ePATH_START, values, 2);
   this->Stream().WriteBoolean(true);
