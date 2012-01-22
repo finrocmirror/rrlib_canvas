@@ -63,8 +63,8 @@ using namespace rrlib::canvas;
 // tCanvas constructors
 //----------------------------------------------------------------------
 tCanvas::tCanvas() :
-    buffer(),
-    stream(&buffer)
+  buffer(),
+  stream(&buffer)
 {}
 
 //----------------------------------------------------------------------

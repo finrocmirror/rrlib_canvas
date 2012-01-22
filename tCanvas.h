@@ -231,7 +231,7 @@ protected:
     typedef typename std::remove_reference < decltype(*data_begin) >::type tData;
     typedef typename std::conditional<std::is_fundamental<tData>::value, tData, typename tData::tElement>::type tElement;
     this->stream << static_cast<uint8_t>(tNumberType<tElement>::value);
-    std::for_each(data_begin, data_end, [this](const tData &vector)
+    std::for_each(data_begin, data_end, [this](const tData & vector)
     {
       this->stream.Write(&vector, sizeof(tData));
     });

@@ -67,7 +67,7 @@ namespace canvas
 // tCanvas2D constructors
 //----------------------------------------------------------------------
 tCanvas2D::tCanvas2D()
-    : in_path_mode(false)
+  : in_path_mode(false)
 {}
 
 //----------------------------------------------------------------------
