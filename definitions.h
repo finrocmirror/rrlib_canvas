@@ -71,38 +71,38 @@ enum tCanvasOpCode
   // ####### tCanvas-supported opcodes ########
 
   // Transformation operations
-  eSET_TRANSFORMATION,      // [(K+1)x(K+1) matrix]
-  eTRANSFORM,               // [(K+1)x(K+1) matrix]
-  eTRANSLATE,               // [vector]
-  eROTATE,                  // [yaw]
-  eSCALE,                   // [vector]
-  eRESET_TRANSFORMATION,    // []
+  eSET_TRANSFORMATION,            // [(K+1)x(K+1) matrix]
+  eTRANSFORM,                     // [(K+1)x(K+1) matrix]
+  eTRANSLATE,                     // [vector]
+  eROTATE,                        // [yaw]
+  eSCALE,                         // [vector]
+  eRESET_TRANSFORMATION,          // []
 
   // Canvas, Draw & encoding mode
-  eSET_COLOR,               // [RGB: 3 bytes]
-  eSET_EDGE_COLOR,          // [RGB: 3 bytes]
-  eSET_FILL_COLOR,          // [RGB: 3 bytes]
-  eSET_FILL,                // [bool]
-  eSET_ALPHA,               // [1 byte]
+  eSET_COLOR,                     // [RGB: 3 bytes]
+  eSET_EDGE_COLOR,                // [RGB: 3 bytes]
+  eSET_FILL_COLOR,                // [RGB: 3 bytes]
+  eSET_FILL,                      // [bool]
+  eSET_ALPHA,                     // [1 byte]
 
   // Geometry primitives
-  eDRAW_POINT,              // [vector]
-  eDRAW_LINE,               // [vector][vector]
-  eDRAW_LINE_SEGMENT,       // [vector][vector]
-  eDRAW_BOX,                // [vector][size1]...[sizeN]
-  eDRAW_ELLIPSOID,          // [vector][diameter1]...[diameterN]
-  eDRAW_POLYGON,            // [number of values: N][vector1]...[vectorN]
-  eDRAW_SPLINE,             // [number of values: N][tension-parameter][vector1]...[vectorN]  (uniform b-spline)
-  eDRAW_CUBIC_BEZIER_CURVE, // [vector][vector][vector][vector]
-  eDRAW_STRING,             // [vector][null-terminated chars]
+  eDRAW_POINT,                    // [vector]
+  eDRAW_LINE,                     // [vector][vector]
+  eDRAW_LINE_SEGMENT,             // [vector][vector]
+  eDRAW_BOX,                      // [vector][size1]...[sizeN]
+  eDRAW_ELLIPSOID,                // [vector][diameter1]...[diameterN]
+  eDRAW_POLYGON,                  // [number of values: N][vector1]...[vectorN]
+  eDRAW_SPLINE,                   // [number of values: N][tension-parameter][vector1]...[vectorN]
+  eDRAW_CUBIC_BEZIER_CURVE,       // [vector][vector][vector][vector]
+  eDRAW_STRING,                   // [vector][null-terminated chars]
 
   // Custom path/shape
-  ePATH_START,              // [point]
-  ePATH_END_OPEN,           // [point]
-  ePATH_END_CLOSED,         // [point]
-  ePATH_LINE,               // [point]
-  ePATH_QUADRATIC_CURVE,    // [point][point]
-  ePATH_CUBIC_CURVE,        // [point][point][point]
+  ePATH_START,                    // [point]
+  ePATH_END_OPEN,                 // [point]
+  ePATH_END_CLOSED,               // [point]
+  ePATH_LINE,                     // [point]
+  ePATH_QUADRATIC_BEZIER_CURVE,   // [point][point]
+  ePATH_CUBIC_BEZIER_CURVE,       // [point][point][point]
 
   // ####### tCanvas2D-only opcodes ########
 

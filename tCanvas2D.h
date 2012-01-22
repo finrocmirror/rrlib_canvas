@@ -248,10 +248,10 @@ public:
    * (Only valid after having started a path or shape)
    */
   template <typename T>
-  void AppendQuadraticCurve(T x1, T y1, T x2, T y2);
+  void AppendQuadraticBezierCurve(T x1, T y1, T x2, T y2);
 
   template <typename T>
-  inline void AppendQuadraticCurve(const math::tVector<2, T> &p1, const math::tVector<2, T> &p2);
+  inline void AppendQuadraticBezierCurve(const math::tVector<2, T> &p1, const math::tVector<2, T> &p2);
 
   /*!
    * Append a cubic bezier curve to the current path or shape edge.
@@ -260,10 +260,10 @@ public:
    * (Only valid after having started a path or shape)
    */
   template <typename T>
-  void AppendCubicCurve(T x1, T y1, T x2, T y2, T x3, T y3);
+  void AppendCubicBezierCurve(T x1, T y1, T x2, T y2, T x3, T y3);
 
   template <typename T>
-  inline void AppendCubicCurve(const math::tVector<2, T>& p1, const math::tVector<2, T>& p2, const math::tVector<2, T>& p3);
+  inline void AppendCubicBezierCurve(const math::tVector<2, T>& p1, const math::tVector<2, T>& p2, const math::tVector<2, T>& p3);
 
 //----------------------------------------------------------------------
 // Private fields and methods

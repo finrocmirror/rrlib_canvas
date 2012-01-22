@@ -337,10 +337,10 @@ void tCanvas2D::AppendLineSegment(const math::tVector<2, T>& v)
 }
 
 //----------------------------------------------------------------------
-// tCanvas2D AppendQuadraticCurve
+// tCanvas2D AppendQuadraticBezierCurve
 //----------------------------------------------------------------------
 template <typename T>
-void tCanvas2D::AppendQuadraticCurve(T x1, T y1, T x2, T y2)
+void tCanvas2D::AppendQuadraticBezierCurve(T x1, T y1, T x2, T y2)
 {
   if (!this->in_path_mode)
   {
@@ -348,20 +348,20 @@ void tCanvas2D::AppendQuadraticCurve(T x1, T y1, T x2, T y2)
     return;
   }
   T values[] = { x1, y1, x2, y2 };
-  this->AppendCommand(ePATH_QUADRATIC_CURVE, values, 4);
+  this->AppendCommand(ePATH_QUADRATIC_BEZIER_CURVE, values, 4);
 }
 
 template <typename T>
-void tCanvas2D::AppendQuadraticCurve(const math::tVector<2, T> &p1, const math::tVector<2, T> &p2)
+void tCanvas2D::AppendQuadraticBezierCurve(const math::tVector<2, T> &p1, const math::tVector<2, T> &p2)
 {
-  this->AppendQuadraticCurve(p1.X(), p1.Y(), p2.X(), p2.Y());
+  this->AppendQuadraticBezierCurve(p1.X(), p1.Y(), p2.X(), p2.Y());
 }
 
 //----------------------------------------------------------------------
-// tCanvas2D AppendCubicCurve
+// tCanvas2D AppendCubicBezierCurve
 //----------------------------------------------------------------------
 template <typename T>
-void tCanvas2D::AppendCubicCurve(T x1, T y1, T x2, T y2, T x3, T y3)
+void tCanvas2D::AppendCubicBezierCurve(T x1, T y1, T x2, T y2, T x3, T y3)
 {
   if (!this->in_path_mode)
   {
@@ -369,13 +369,13 @@ void tCanvas2D::AppendCubicCurve(T x1, T y1, T x2, T y2, T x3, T y3)
     return;
   }
   T values[] = { x1, y1, x2, y2, x3, y3 };
-  this->AppendCommand(ePATH_CUBIC_CURVE, values, 6);
+  this->AppendCommand(ePATH_CUBIC_BEZIER_CURVE, values, 6);
 }
 
 template <typename T>
-void tCanvas2D::AppendCubicCurve(const math::tVector<2, T>& p1, const math::tVector<2, T>& p2, const math::tVector<2, T>& p3)
+void tCanvas2D::AppendCubicBezierCurve(const math::tVector<2, T>& p1, const math::tVector<2, T>& p2, const math::tVector<2, T>& p3)
 {
-  this->AppendCubicCurve(p1.X(), p1.Y(), p2.X(), p2.Y(), p3.X(), p3.Y());
+  this->AppendCubicBezierCurve(p1.X(), p1.Y(), p2.X(), p2.Y(), p3.X(), p3.Y());
 }
 
 //----------------------------------------------------------------------
