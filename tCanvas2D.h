@@ -270,6 +270,7 @@ public:
 //----------------------------------------------------------------------
 private:
 
+  bool entering_path_mode;
   bool in_path_mode;
 
 };

@@ -67,7 +67,8 @@ namespace canvas
 // tCanvas2D constructors
 //----------------------------------------------------------------------
 tCanvas2D::tCanvas2D()
-  : in_path_mode(false)
+  : entering_path_mode(false),
+    in_path_mode(false)
 {}
 
 //----------------------------------------------------------------------
@@ -156,6 +157,11 @@ void tCanvas2D::SetZ(T z)
 template <typename T>
 void tCanvas2D::DrawPoint(T x, T y)
 {
+  if (this->entering_path_mode)
+  {
+    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Just started path mode. Command has no effect.");
+    return;
+  }
   this->in_path_mode = false;
   T values[] = { x, y };
   this->AppendCommand(eDRAW_POINT, values, 2);
@@ -173,6 +179,11 @@ void tCanvas2D::DrawPoint(const math::tVector<2, T> &v)
 template <typename T>
 void tCanvas2D::DrawLine(T x1, T y1, T x2, T y2)
 {
+  if (this->entering_path_mode)
+  {
+    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Just started path mode. Command has no effect.");
+    return;
+  }
   this->in_path_mode = false;
   T values[] = { x1, y1, x2, y2 };
   this->AppendCommand(eDRAW_LINE, values, 4);
@@ -190,6 +201,11 @@ void tCanvas2D::DrawLine(const math::tVector<2, T> &p1, const math::tVector<2, T
 template <typename T>
 void tCanvas2D::DrawLineSegment(T x1, T y1, T x2, T y2)
 {
+  if (this->entering_path_mode)
+  {
+    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Just started path mode. Command has no effect.");
+    return;
+  }
   this->in_path_mode = false;
   T values[] = { x1, y1, x2, y2 };
   this->AppendCommand(eDRAW_LINE_SEGMENT, values, 4);
@@ -207,6 +223,11 @@ void tCanvas2D::DrawLineSegment(const math::tVector<2, T> &p1, const math::tVect
 template <typename T>
 void tCanvas2D::DrawBox(T top_left_x, T top_left_y, T width, T height)
 {
+  if (this->entering_path_mode)
+  {
+    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Just started path mode. Command has no effect.");
+    return;
+  }
   this->in_path_mode = false;
   T values[] = { top_left_x, top_left_y, width, height };
   this->AppendCommand(eDRAW_BOX, values, 4);
@@ -224,6 +245,11 @@ void tCanvas2D::DrawBox(const math::tVector<2, T> &top_left, T width, T height)
 template <typename T>
 void tCanvas2D::DrawEllipsoid(T center_x, T center_y, T width, T height)
 {
+  if (this->entering_path_mode)
+  {
+    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Just started path mode. Command has no effect.");
+    return;
+  }
   this->in_path_mode = false;
   T values[] = { center_x - width / 2, center_y - height / 2, width, height };
   this->AppendCommand(eDRAW_ELLIPSOID, values, 4);
@@ -241,6 +267,11 @@ void tCanvas2D::DrawEllipsoid(const math::tVector<2, T> &center_position, T widt
 template <typename TIterator>
 void tCanvas2D::DrawPolygon(TIterator points_begin, TIterator points_end)
 {
+  if (this->entering_path_mode)
+  {
+    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Just started path mode. Command has no effect.");
+    return;
+  }
   this->in_path_mode = false;
   this->AppendCommandRaw(eDRAW_POLYGON);
   this->Stream().WriteShort(std::distance(points_begin, points_end));
@@ -253,6 +284,11 @@ void tCanvas2D::DrawPolygon(TIterator points_begin, TIterator points_end)
 template <typename TIterator>
 void tCanvas2D::DrawSpline(TIterator points_begin, TIterator points_end, float tension)
 {
+  if (this->entering_path_mode)
+  {
+    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Just started path mode. Command has no effect.");
+    return;
+  }
   this->in_path_mode = false;
   this->AppendCommandRaw(eDRAW_SPLINE);
   this->Stream().WriteFloat(tension);
@@ -266,6 +302,11 @@ void tCanvas2D::DrawSpline(TIterator points_begin, TIterator points_end, float t
 template <typename TIterator>
 void tCanvas2D::DrawCubicBezierCurve(TIterator points_begin, TIterator points_end)
 {
+  if (this->entering_path_mode)
+  {
+    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Just started path mode. Command has no effect.");
+    return;
+  }
   this->in_path_mode = false;
   assert(std::distance(points_begin, points_end) == 4);
   this->AppendCommandRaw(eDRAW_CUBIC_BEZIER_CURVE);
@@ -285,14 +326,15 @@ void tCanvas2D::DrawCubicBezierCurve(const math::tVector<2, T> &p1, const math::
 template <typename T>
 void tCanvas2D::StartPath(T x, T y)
 {
-  if (this->in_path_mode)
+  if (this->entering_path_mode)
   {
-    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Already in path mode. Command has no effect.");
+    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Just started path mode. Command has no effect.");
     return;
   }
   T values[] = { x, y };
   this->AppendCommand(ePATH_START, values, 2);
   this->Stream().WriteBoolean(false);
+  this->entering_path_mode = true;
   this->in_path_mode = true;
 }
 
@@ -308,14 +350,15 @@ void tCanvas2D::StartPath(const math::tVector<2, T> &p)
 template <typename T>
 void tCanvas2D::StartShape(T x, T y)
 {
-  if (this->in_path_mode)
+  if (this->entering_path_mode)
   {
-    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Already in path mode. Command has no effect.");
+    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Just started path mode. Command has no effect.");
     return;
   }
   T values[] = { x, y };
   this->AppendCommand(ePATH_START, values, 2);
   this->Stream().WriteBoolean(true);
+  this->entering_path_mode = true;
   this->in_path_mode = true;
 }
 
@@ -336,6 +379,7 @@ void tCanvas2D::AppendLineSegment(T x, T y)
     RRLIB_LOG_PRINT(logging::eLL_ERROR, "Not in path mode. Command has no effect.");
     return;
   }
+  this->entering_path_mode = false;
   T values[] = { x, y };
   this->AppendCommand(ePATH_LINE, values, 2);
 }
@@ -357,6 +401,7 @@ void tCanvas2D::AppendQuadraticBezierCurve(T x1, T y1, T x2, T y2)
     RRLIB_LOG_PRINT(logging::eLL_ERROR, "Not in path mode. Command has no effect.");
     return;
   }
+  this->entering_path_mode = false;
   T values[] = { x1, y1, x2, y2 };
   this->AppendCommand(ePATH_QUADRATIC_BEZIER_CURVE, values, 4);
 }
@@ -378,6 +423,7 @@ void tCanvas2D::AppendCubicBezierCurve(T x1, T y1, T x2, T y2, T x3, T y3)
     RRLIB_LOG_PRINT(logging::eLL_ERROR, "Not in path mode. Command has no effect.");
     return;
   }
+  this->entering_path_mode = false;
   T values[] = { x1, y1, x2, y2, x3, y3 };
   this->AppendCommand(ePATH_CUBIC_BEZIER_CURVE, values, 6);
 }
