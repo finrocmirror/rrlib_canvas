@@ -39,6 +39,7 @@
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
 #include <type_traits>
+#include <iterator>
 
 #include "rrlib/serialization/tMemoryBuffer.h"
 #include "rrlib/serialization/tOutputStream.h"
@@ -228,19 +229,13 @@ protected:
   template <typename TIterator>
   inline void AppendData(TIterator data_begin, TIterator data_end)
   {
-    typedef typename std::remove_reference < decltype(*data_begin) >::type tData;
-    typedef typename std::conditional<std::is_fundamental<tData>::value, tData, typename tData::tElement>::type tElement;
-    this->stream << static_cast<uint8_t>(tNumberType<tElement>::value);
+    typedef typename std::iterator_traits<TIterator>::value_type tData;
+    this->stream << static_cast<uint8_t>(tNumberType<typename tElementExtractor<true, tData>::tElement>::value);
     std::for_each(data_begin, data_end, [this](const tData & vector)
     {
       this->stream.Write(&vector, sizeof(tData));
     });
   }
-
-//----------------------------------------------------------------------
-// Protected methods
-//----------------------------------------------------------------------
-protected:
 
   inline rrlib::serialization::tOutputStream &Stream()
   {
@@ -252,11 +247,23 @@ protected:
 //----------------------------------------------------------------------
 private:
 
+  template <bool, typename T>
+  struct tElementExtractor
+  {
+    typedef T tElement;
+  };
+  template <typename T>
+  struct tElementExtractor<false, T>
+  {
+    typedef typename T::tElement tElement;
+  };
+
   /*! Buffer that disposable geometry is serialized to */
   rrlib::serialization::tMemoryBuffer buffer;
 
   /*! Stream to serialize to disposable geometry buffer */
   rrlib::serialization::tOutputStream stream;
+
 };
 
 //----------------------------------------------------------------------

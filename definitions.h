@@ -89,6 +89,7 @@ enum tCanvasOpCode
   eDRAW_POINT,                    // [vector]
   eDRAW_LINE,                     // [vector][vector]
   eDRAW_LINE_SEGMENT,             // [vector][vector]
+  eDRAW_ARROW,                    // [bool][vector][vector]
   eDRAW_BOX,                      // [vector][size1]...[sizeN]
   eDRAW_ELLIPSOID,                // [vector][diameter1]...[diameterN]
   eDRAW_POLYGON,                  // [number of values: N][vector1]...[vectorN]
@@ -107,8 +108,8 @@ enum tCanvasOpCode
   // ####### tCanvas2D-only opcodes ########
 
   // Canvas, Draw & encoding mode
-  eSET_Z,                   // [value]
-  eSET_EXTRUSION            // [value]
+  eSET_Z,                         // [value]
+  eSET_EXTRUSION                  // [value]
 
   // ####### tCanvas3D-only opcodes ########
 

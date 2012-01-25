@@ -218,6 +218,30 @@ void tCanvas2D::DrawLineSegment(const math::tVector<2, T> &p1, const math::tVect
 }
 
 //----------------------------------------------------------------------
+// tCanvas2D DrawArrow
+//----------------------------------------------------------------------
+template <typename T>
+void tCanvas2D::DrawArrow(T x1, T y1, T x2, T y2, bool undirected)
+{
+  if (this->entering_path_mode)
+  {
+    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Just started path mode. Command has no effect.");
+    return;
+  }
+  this->in_path_mode = false;
+  T values[] = { x1, y1, x2, y2 };
+  this->AppendCommandRaw(eDRAW_ARROW);
+  this->Stream().WriteBoolean(undirected);
+  this->AppendData(values, values + 4);
+}
+
+template <typename T>
+void tCanvas2D::DrawArrow(const math::tVector<2, T> &p1, const math::tVector<2, T> &p2, bool undirected)
+{
+  this->DrawArrow(p1.X(), p1.Y(), p2.X(), p2.Y(), undirected);
+}
+
+//----------------------------------------------------------------------
 // tCanvas2D DrawBox
 //----------------------------------------------------------------------
 template <typename T>

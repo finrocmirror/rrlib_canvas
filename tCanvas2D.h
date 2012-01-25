@@ -168,6 +168,15 @@ public:
   inline void DrawLineSegment(const math::tVector<2, T> &p1, const math::tVector<2, T> &p2);
 
   /*!
+   * Draw arrow
+   */
+  template <typename T>
+  void DrawArrow(T x1, T y1, T x2, T y2, bool undirected = false);
+
+  template <typename T>
+  inline void DrawArrow(const math::tVector<2, T> &p1, const math::tVector<2, T> &p2, bool undirected = false);
+
+  /*!
    * Draw Box
    */
   template <typename T>
