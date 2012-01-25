@@ -230,7 +230,7 @@ protected:
   inline void AppendData(TIterator data_begin, TIterator data_end)
   {
     typedef typename std::iterator_traits<TIterator>::value_type tData;
-    this->stream << static_cast<uint8_t>(tNumberType<typename tElementExtractor<true, tData>::tElement>::value);
+    this->stream << static_cast<uint8_t>(tNumberType<typename tElementExtractor<std::is_fundamental<tData>::value, tData>::tElement>::value);
     std::for_each(data_begin, data_end, [this](const tData & vector)
     {
       this->stream.Write(&vector, sizeof(tData));
