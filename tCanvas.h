@@ -98,7 +98,11 @@ public:
 
   tCanvas();
 
+  tCanvas(tCanvas && o);
+
   virtual ~tCanvas() {}
+
+  tCanvas& operator=(tCanvas && o);
 
   /*!
    * Clear canvas
@@ -182,7 +186,7 @@ public:
   {
     T values[] = { x, y };
     AppendCommand(eDRAW_STRING, values, 2);
-    stream.WriteString(text);
+    stream->WriteString(text);
   }
   template <typename T, typename S>
   void DrawText(const math::tVector<2, T> &position, const S &text)
@@ -210,8 +214,8 @@ protected:
   inline void AppendCommand(tCanvasOpCode opcode, const T *values, size_t value_count)
   {
     // TODO could be optimized
-    this->stream << static_cast<uint8_t>(opcode) << static_cast<uint8_t>(tNumberType<T>::value);
-    this->stream.Write(values, value_count * sizeof(T));
+    (*this->stream) << static_cast<uint8_t>(opcode) << static_cast<uint8_t>(tNumberType<T>::value);
+    this->stream->Write(values, value_count * sizeof(T));
   }
 
   /*!
@@ -230,16 +234,16 @@ protected:
   inline void AppendData(TIterator data_begin, TIterator data_end)
   {
     typedef typename std::iterator_traits<TIterator>::value_type tData;
-    this->stream << static_cast<uint8_t>(tNumberType<typename tElementExtractor<std::is_fundamental<tData>::value, tData>::tElement>::value);
+    (*this->stream) << static_cast<uint8_t>(tNumberType<typename tElementExtractor<std::is_fundamental<tData>::value, tData>::tElement>::value);
     std::for_each(data_begin, data_end, [this](const tData & vector)
     {
-      this->stream.Write(&vector, sizeof(tData));
+      this->stream->Write(&vector, sizeof(tData));
     });
   }
 
   inline rrlib::serialization::tOutputStream &Stream()
   {
-    return this->stream;
+    return *this->stream;
   }
 
 //----------------------------------------------------------------------
@@ -259,10 +263,10 @@ private:
   };
 
   /*! Buffer that disposable geometry is serialized to */
-  rrlib::serialization::tMemoryBuffer buffer;
+  std::unique_ptr<rrlib::serialization::tMemoryBuffer> buffer;
 
   /*! Stream to serialize to disposable geometry buffer */
-  rrlib::serialization::tOutputStream stream;
+  std::unique_ptr<rrlib::serialization::tOutputStream> stream;
 
 };
 

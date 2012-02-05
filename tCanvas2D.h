@@ -91,6 +91,16 @@ public:
   inline tCanvas2D();
 
   /*!
+   * Move constructor
+   */
+  inline tCanvas2D(tCanvas2D && o);
+
+  /*!
+   * Move assignment
+   */
+  inline tCanvas2D& operator=(tCanvas2D && o);
+
+  /*!
    * Set affine transformation of all following operations
    * Overwrites current transform completely.
    * Should only be used when this is not a problem

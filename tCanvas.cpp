@@ -63,19 +63,37 @@ using namespace rrlib::canvas;
 // tCanvas constructors
 //----------------------------------------------------------------------
 tCanvas::tCanvas() :
-  buffer(),
-  stream(&buffer)
+  buffer(new rrlib::serialization::tMemoryBuffer()),
+  stream(new rrlib::serialization::tOutputStream(buffer.get()))
 {}
+
+tCanvas::tCanvas(tCanvas && o) :
+  buffer(),
+  stream()
+{
+  std::swap(buffer, o.buffer);
+  std::swap(stream, o.stream);
+}
+
+//----------------------------------------------------------------------
+// tCanvas2D operator=
+//----------------------------------------------------------------------
+tCanvas& tCanvas::operator=(tCanvas && o)
+{
+  std::swap(buffer, o.buffer);
+  std::swap(stream, o.stream);
+  return *this;
+}
 
 //----------------------------------------------------------------------
 // tCanvas AppendCommandRaw
 //----------------------------------------------------------------------
 void tCanvas::AppendCommandRaw(tCanvasOpCode opcode, void* buffer, size_t bytes)
 {
-  this->stream << opcode;
+  (*this->stream) << opcode;
   if (buffer)
   {
-    this->stream.Write(buffer, bytes);
+    this->stream->Write(buffer, bytes);
   }
 }
 
@@ -84,8 +102,8 @@ void tCanvas::AppendCommandRaw(tCanvasOpCode opcode, void* buffer, size_t bytes)
 //----------------------------------------------------------------------
 void tCanvas::Clear()
 {
-  this->buffer.Clear();
-  this->stream.Reset(&this->buffer);
+  this->buffer->Clear();
+  this->stream->Reset(this->buffer.get());
 }
 
 //----------------------------------------------------------------------
@@ -93,7 +111,7 @@ void tCanvas::Clear()
 //----------------------------------------------------------------------
 void tCanvas::Deserialize(rrlib::serialization::tInputStream& is)
 {
-  is >> this->buffer;
+  is >> (*this->buffer);
 }
 
 //----------------------------------------------------------------------
@@ -101,8 +119,8 @@ void tCanvas::Deserialize(rrlib::serialization::tInputStream& is)
 //----------------------------------------------------------------------
 void tCanvas::Serialize(rrlib::serialization::tOutputStream& os) const
 {
-  os.WriteInt(this->stream.GetWriteSize());
-  os.Write(*this->buffer.GetBuffer(), 0u, this->stream.GetWriteSize());
+  os.WriteInt(this->stream->GetWriteSize());
+  os.Write(*this->buffer->GetBuffer(), 0u, this->stream->GetWriteSize());
 }
 
 
