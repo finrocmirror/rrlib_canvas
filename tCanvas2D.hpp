@@ -234,7 +234,7 @@ void tCanvas2D::DrawLineSegment(T x1, T y1, T x2, T y2)
 template <typename T>
 void tCanvas2D::DrawLineSegment(const math::tVector<2, T> &p1, const math::tVector<2, T> &p2)
 {
-  this->DrawLine(p1.X(), p1.Y(), p2.X(), p2.Y());
+  this->DrawLineSegment(p1.X(), p1.Y(), p2.X(), p2.Y());
 }
 
 //----------------------------------------------------------------------
