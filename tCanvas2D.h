@@ -205,25 +205,28 @@ public:
   inline void DrawEllipsoid(const math::tVector<2, T> &center_position, T width, T height);
 
   /*!
+   * Draw Bezier curve
+   */
+  template <typename TIterator>
+  void DrawBezierCurve(TIterator points_begin, TIterator points_end);
+
+  template <typename TElement, typename ... TVectors>
+  void DrawBezierCurve(const math::tVector<2, TElement> &p1, const math::tVector<2, TElement> &p2, const TVectors &... rest);
+
+  /*!
    * Draw Polygon
    */
   template <typename TIterator>
   void DrawPolygon(TIterator points_begin, TIterator points_end);
+
+  template <typename TElement, typename ... TVectors>
+  void DrawPolygon(const math::tVector<2, TElement> &p1, const math::tVector<2, TElement> &p2, const TVectors &... rest);
 
   /*!
    * Draw Spline
    */
   template <typename TIterator>
   void DrawSpline(TIterator points_begin, TIterator points_end, float tension = 0.0);
-
-  /*!
-   * Draw Cubic Bezier curve
-   */
-  template <typename TIterator>
-  void DrawCubicBezierCurve(TIterator points_begin, TIterator points_end);
-
-  template <typename T>
-  void DrawCubicBezierCurve(const math::tVector<2, T> &p1, const math::tVector<2, T> &p2, const math::tVector<2, T> &p3, const math::tVector<2, T> &p4);
 
   /*!
    * Start a path (of lines and curves)

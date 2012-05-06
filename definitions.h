@@ -92,9 +92,9 @@ enum tCanvasOpCode
   eDRAW_ARROW,                    // [bool][vector][vector]
   eDRAW_BOX,                      // [vector][size1]...[sizeN]
   eDRAW_ELLIPSOID,                // [vector][diameter1]...[diameterN]
+  eDRAW_BEZIER_CURVE,             // [degree: N][vector1]...[vectorN+1]
   eDRAW_POLYGON,                  // [number of values: N][vector1]...[vectorN]
   eDRAW_SPLINE,                   // [number of values: N][tension-parameter][vector1]...[vectorN]
-  eDRAW_CUBIC_BEZIER_CURVE,       // [vector][vector][vector][vector]
   eDRAW_STRING,                   // [vector][null-terminated chars]
 
   // Custom path/shape

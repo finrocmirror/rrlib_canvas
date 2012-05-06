@@ -33,6 +33,7 @@
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
 #include "rrlib/logging/messages.h"
+#include "rrlib/util/variadic_templates.h"
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -306,6 +307,37 @@ void tCanvas2D::DrawEllipsoid(const math::tVector<2, T> &center_position, T widt
 }
 
 //----------------------------------------------------------------------
+// tCanvas2D DrawBezierCurve
+//----------------------------------------------------------------------
+template <typename TIterator>
+void tCanvas2D::DrawBezierCurve(TIterator points_begin, TIterator points_end)
+{
+  if (this->entering_path_mode)
+  {
+    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Just started path mode. Command has no effect.");
+    return;
+  }
+  this->in_path_mode = false;
+  assert(std::distance(points_begin, points_end) > 1);
+  this->AppendCommandRaw(eDRAW_BEZIER_CURVE);
+  this->Stream().WriteShort(std::distance(points_begin, points_end) - 1);
+  this->AppendData(points_begin, points_end);
+}
+
+template <typename TElement, typename ... TVectors>
+void tCanvas2D::DrawBezierCurve(const math::tVector<2, TElement> &p1, const math::tVector<2, TElement> &p2, const TVectors &... rest)
+{
+  typedef math::tVector<2, TElement> tVector;
+  const size_t number_of_points = 2 + sizeof...(rest);
+
+  tVector buffer[number_of_points];
+  tVector *p = buffer;
+  util::ProcessVariadicValues<tVector>([p](const tVector & value) mutable { *p = value; ++p; }, p1, p2, rest...);
+
+  this->DrawBezierCurve(buffer, buffer + number_of_points);
+}
+
+//----------------------------------------------------------------------
 // tCanvas2D DrawPolygon
 //----------------------------------------------------------------------
 template <typename TIterator>
@@ -320,6 +352,19 @@ void tCanvas2D::DrawPolygon(TIterator points_begin, TIterator points_end)
   this->AppendCommandRaw(eDRAW_POLYGON);
   this->Stream().WriteShort(std::distance(points_begin, points_end));
   this->AppendData(points_begin, points_end);
+}
+
+template <typename TElement, typename ... TVectors>
+void tCanvas2D::DrawPolygon(const math::tVector<2, TElement> &p1, const math::tVector<2, TElement> &p2, const TVectors &... rest)
+{
+  typedef math::tVector<2, TElement> tVector;
+  const size_t number_of_points = 2 + sizeof...(rest);
+
+  tVector buffer[number_of_points];
+  tVector *p = buffer;
+  util::ProcessVariadicValues<tVector>([p](const tVector & value) mutable { *p = value; ++p; }, p1, p2, rest...);
+
+  this->DrawPolygon(buffer, buffer + number_of_points);
 }
 
 //----------------------------------------------------------------------
@@ -338,30 +383,6 @@ void tCanvas2D::DrawSpline(TIterator points_begin, TIterator points_end, float t
   this->Stream().WriteFloat(tension);
   this->Stream().WriteShort(std::distance(points_begin, points_end));
   this->AppendData(points_begin, points_end);
-}
-
-//----------------------------------------------------------------------
-// tCanvas2D DrawCubicBezierCurve
-//----------------------------------------------------------------------
-template <typename TIterator>
-void tCanvas2D::DrawCubicBezierCurve(TIterator points_begin, TIterator points_end)
-{
-  if (this->entering_path_mode)
-  {
-    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Just started path mode. Command has no effect.");
-    return;
-  }
-  this->in_path_mode = false;
-  assert(std::distance(points_begin, points_end) == 4);
-  this->AppendCommandRaw(eDRAW_CUBIC_BEZIER_CURVE);
-  this->AppendData(points_begin, points_end);
-}
-
-template <typename T>
-void tCanvas2D::DrawCubicBezierCurve(const math::tVector<2, T> &p1, const math::tVector<2, T> &p2, const math::tVector<2, T> &p3, const math::tVector<2, T> &p4)
-{
-  const math::tVector<2, T> buffer[] = { p1, p2, p3, p4 };
-  this->DrawCubicBezierCurve(buffer, buffer + 4);
 }
 
 //----------------------------------------------------------------------
