@@ -180,7 +180,7 @@ void tCanvas2D::DrawPoint(T x, T y)
 {
   if (this->entering_path_mode)
   {
-    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Just started path mode. Command has no effect.");
+    RRLIB_LOG_PRINT(ERROR, "Just started path mode. Command has no effect.");
     return;
   }
   this->in_path_mode = false;
@@ -202,7 +202,7 @@ void tCanvas2D::DrawLine(T x1, T y1, T x2, T y2)
 {
   if (this->entering_path_mode)
   {
-    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Just started path mode. Command has no effect.");
+    RRLIB_LOG_PRINT(ERROR, "Just started path mode. Command has no effect.");
     return;
   }
   this->in_path_mode = false;
@@ -224,7 +224,7 @@ void tCanvas2D::DrawLineSegment(T x1, T y1, T x2, T y2)
 {
   if (this->entering_path_mode)
   {
-    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Just started path mode. Command has no effect.");
+    RRLIB_LOG_PRINT(ERROR, "Just started path mode. Command has no effect.");
     return;
   }
   this->in_path_mode = false;
@@ -246,7 +246,7 @@ void tCanvas2D::DrawArrow(T x1, T y1, T x2, T y2, bool undirected)
 {
   if (this->entering_path_mode)
   {
-    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Just started path mode. Command has no effect.");
+    RRLIB_LOG_PRINT(ERROR, "Just started path mode. Command has no effect.");
     return;
   }
   this->in_path_mode = false;
@@ -270,7 +270,7 @@ void tCanvas2D::DrawBox(T top_left_x, T top_left_y, T width, T height)
 {
   if (this->entering_path_mode)
   {
-    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Just started path mode. Command has no effect.");
+    RRLIB_LOG_PRINT(ERROR, "Just started path mode. Command has no effect.");
     return;
   }
   this->in_path_mode = false;
@@ -292,7 +292,7 @@ void tCanvas2D::DrawEllipsoid(T center_x, T center_y, T width, T height)
 {
   if (this->entering_path_mode)
   {
-    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Just started path mode. Command has no effect.");
+    RRLIB_LOG_PRINT(ERROR, "Just started path mode. Command has no effect.");
     return;
   }
   this->in_path_mode = false;
@@ -314,7 +314,7 @@ void tCanvas2D::DrawBezierCurve(TIterator points_begin, TIterator points_end)
 {
   if (this->entering_path_mode)
   {
-    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Just started path mode. Command has no effect.");
+    RRLIB_LOG_PRINT(ERROR, "Just started path mode. Command has no effect.");
     return;
   }
   this->in_path_mode = false;
@@ -345,7 +345,7 @@ void tCanvas2D::DrawPolygon(TIterator points_begin, TIterator points_end)
 {
   if (this->entering_path_mode)
   {
-    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Just started path mode. Command has no effect.");
+    RRLIB_LOG_PRINT(ERROR, "Just started path mode. Command has no effect.");
     return;
   }
   this->in_path_mode = false;
@@ -375,7 +375,7 @@ void tCanvas2D::DrawSpline(TIterator points_begin, TIterator points_end, float t
 {
   if (this->entering_path_mode)
   {
-    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Just started path mode. Command has no effect.");
+    RRLIB_LOG_PRINT(ERROR, "Just started path mode. Command has no effect.");
     return;
   }
   this->in_path_mode = false;
@@ -393,7 +393,7 @@ void tCanvas2D::StartPath(T x, T y)
 {
   if (this->entering_path_mode)
   {
-    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Just started path mode. Command has no effect.");
+    RRLIB_LOG_PRINT(ERROR, "Just started path mode. Command has no effect.");
     return;
   }
   T values[] = { x, y };
@@ -417,7 +417,7 @@ void tCanvas2D::StartShape(T x, T y)
 {
   if (this->entering_path_mode)
   {
-    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Just started path mode. Command has no effect.");
+    RRLIB_LOG_PRINT(ERROR, "Just started path mode. Command has no effect.");
     return;
   }
   T values[] = { x, y };
@@ -441,7 +441,7 @@ void tCanvas2D::AppendLineSegment(T x, T y)
 {
   if (!this->in_path_mode)
   {
-    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Not in path mode. Command has no effect.");
+    RRLIB_LOG_PRINT(ERROR, "Not in path mode. Command has no effect.");
     return;
   }
   this->entering_path_mode = false;
@@ -463,7 +463,7 @@ void tCanvas2D::AppendQuadraticBezierCurve(T x1, T y1, T x2, T y2)
 {
   if (!this->in_path_mode)
   {
-    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Not in path mode. Command has no effect.");
+    RRLIB_LOG_PRINT(ERROR, "Not in path mode. Command has no effect.");
     return;
   }
   this->entering_path_mode = false;
@@ -485,7 +485,7 @@ void tCanvas2D::AppendCubicBezierCurve(T x1, T y1, T x2, T y2, T x3, T y3)
 {
   if (!this->in_path_mode)
   {
-    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Not in path mode. Command has no effect.");
+    RRLIB_LOG_PRINT(ERROR, "Not in path mode. Command has no effect.");
     return;
   }
   this->entering_path_mode = false;
