@@ -64,7 +64,7 @@ using namespace rrlib::canvas;
 //----------------------------------------------------------------------
 tCanvas::tCanvas() :
   buffer(new rrlib::serialization::tMemoryBuffer()),
-  stream(new rrlib::serialization::tOutputStream(buffer.get()))
+  stream(new rrlib::serialization::tOutputStream(*buffer))
 {}
 
 tCanvas::tCanvas(tCanvas && o) :
@@ -103,7 +103,7 @@ void tCanvas::AppendCommandRaw(tCanvasOpCode opcode, void* buffer, size_t bytes)
 void tCanvas::Clear()
 {
   this->buffer->Clear();
-  this->stream->Reset(this->buffer.get());
+  this->stream->Reset(*this->buffer);
 }
 
 //----------------------------------------------------------------------
