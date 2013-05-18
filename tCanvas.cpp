@@ -106,21 +106,18 @@ void tCanvas::Clear()
   this->stream->Reset(*this->buffer);
 }
 
-//----------------------------------------------------------------------
-// tCanvas Deserialize
-//----------------------------------------------------------------------
-void tCanvas::Deserialize(rrlib::serialization::tInputStream& is)
+rrlib::serialization::tOutputStream& rrlib::canvas::operator << (rrlib::serialization::tOutputStream& stream, const tCanvas& canvas)
 {
-  is >> (*this->buffer);
+  stream.WriteLong(canvas.stream->GetWriteSize());
+  stream.Write(canvas.buffer->GetBuffer(), 0u, canvas.stream->GetWriteSize());
+  return stream;
 }
 
-//----------------------------------------------------------------------
-// tCanvas Serialize
-//----------------------------------------------------------------------
-void tCanvas::Serialize(rrlib::serialization::tOutputStream& os) const
+rrlib::serialization::tInputStream& rrlib::canvas::operator >> (rrlib::serialization::tInputStream& stream, tCanvas& canvas)
 {
-  os.WriteInt(this->stream->GetWriteSize());
-  os.Write(*this->buffer->GetBuffer(), 0u, this->stream->GetWriteSize());
+  stream >> (*canvas.buffer);
+  return stream;
 }
+
 
 

@@ -89,7 +89,7 @@ namespace canvas
  *
  *  Points, lines, rectangles, ellipses, polygons, bezier-splines, text
  */
-class tCanvas : public rrlib::serialization::tSerializable, public boost::noncopyable
+class tCanvas : public rrlib::util::tNoncopyable
 {
 //----------------------------------------------------------------------
 // Public methods and typedefs
@@ -199,10 +199,6 @@ public:
 //----------------------------------------------------------------------
 protected:
 
-  virtual void Serialize(rrlib::serialization::tOutputStream& os) const;
-
-  virtual void Deserialize(rrlib::serialization::tInputStream& is);
-
   /*!
    * Adds command to canvas data
    *
@@ -251,6 +247,9 @@ protected:
 //----------------------------------------------------------------------
 private:
 
+  friend serialization::tOutputStream& operator << (serialization::tOutputStream& stream, const tCanvas& canvas);
+  friend serialization::tInputStream& operator >> (serialization::tInputStream& stream, tCanvas& canvas);
+
   template <bool, typename T>
   struct tElementExtractor
   {
@@ -269,6 +268,9 @@ private:
   std::unique_ptr<rrlib::serialization::tOutputStream> stream;
 
 };
+
+serialization::tOutputStream& operator << (serialization::tOutputStream& stream, const tCanvas& canvas);
+serialization::tInputStream& operator >> (serialization::tInputStream& stream, tCanvas& canvas);
 
 //----------------------------------------------------------------------
 // End of namespace declaration
