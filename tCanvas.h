@@ -179,25 +179,45 @@ public:
   }
 
   /*!
-   * Draw Text
+   *
    */
-  template <typename T, typename S>
-  void DrawText(T x, T y, const S& text)
+  void ClosePath()
   {
-    T values[] = { x, y };
-    AppendCommand(eDRAW_STRING, values, 2);
-    stream->WriteString(text);
-  }
-  template <typename T, typename S>
-  void DrawText(const math::tVector<2, T> &position, const S &text)
-  {
-    this->DrawText(position.X(), position.Y(), text);
+    if (!this->in_path_mode)
+    {
+      RRLIB_LOG_PRINT(ERROR, "Not in path mode. Command has no effect.");
+      return;
+    }
+    if (this->entering_path_mode)
+    {
+      RRLIB_LOG_PRINT(ERROR, "Just entered path mode. Command has no effect.");
+      return;
+    }
+    this->AppendCommandRaw(ePATH_END_OPEN);
+    this->in_path_mode = false;
   }
 
+  void CloseShape()
+  {
+    if (!this->in_path_mode)
+    {
+      RRLIB_LOG_PRINT(ERROR, "Not in path mode. Command has no effect.");
+      return;
+    }
+    if (this->entering_path_mode)
+    {
+      RRLIB_LOG_PRINT(ERROR, "Just entered path mode. Command has no effect.");
+      return;
+    }
+    this->AppendCommandRaw(ePATH_END_CLOSED);
+    this->in_path_mode = false;
+  }
 //----------------------------------------------------------------------
 // Protected methods
 //----------------------------------------------------------------------
 protected:
+  bool entering_path_mode;
+  bool in_path_mode;
 
   /*!
    * Adds command to canvas data

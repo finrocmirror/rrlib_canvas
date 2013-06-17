@@ -63,11 +63,15 @@ using namespace rrlib::canvas;
 // tCanvas constructors
 //----------------------------------------------------------------------
 tCanvas::tCanvas() :
+  entering_path_mode(false),
+  in_path_mode(false),
   buffer(new rrlib::serialization::tMemoryBuffer()),
   stream(new rrlib::serialization::tOutputStream(*buffer))
 {}
 
 tCanvas::tCanvas(tCanvas && o) :
+  entering_path_mode(false),
+  in_path_mode(false),
   buffer(),
   stream()
 {

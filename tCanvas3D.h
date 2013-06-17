@@ -21,10 +21,11 @@
 //----------------------------------------------------------------------
 /*!\file    tCanvas3D.h
  *
+ * \author  Patrick Fleischmann
  * \author  Max Reichardt
  * \author  Tobias Föhst
  *
- * \date    2012-01-13
+ * \date    2013-06-13
  *
  * \brief Contains tCanvas3D
  *
@@ -87,6 +88,251 @@ class tCanvas3D : public tCanvas
 // Public methods and typedefs
 //----------------------------------------------------------------------
 public:
+
+  inline tCanvas3D();
+
+  /*!
+   * Move constructor
+   */
+  inline tCanvas3D(tCanvas3D && o);
+
+  /*!
+   * Move assignment
+   */
+  inline tCanvas3D& operator=(tCanvas3D && o);
+
+  /*!
+   * Set affine transformation of all following operations
+   * Overwrites current transform completely.
+   * Should only be used when this is not a problem
+   * (=> when this code fragment is never used on top of another transformation)
+   */
+  template <typename T>
+  void SetTransformation(const math::tMatrix<4, 4, T> &t);
+
+  inline void SetTransformation(const math::tPose3D &transformation);
+
+  /*!
+   * Applies an affine transform to the Canvas' current transformation.
+   * (according to the rule last-specified-first-applied)
+   */
+  template <typename T>
+  void Transform(const math::tMatrix<4, 4, T> &t);
+
+  inline void Transform(const math::tPose3D &transformation);
+
+  /*!
+   * Applies a translation transform to the Canvas' current transformation.
+   */
+  template <typename T>
+  void Translate(T x, T y, T z);
+
+  template <typename T>
+  void Translate(const math::tVector<3, T> &v);
+
+  /*!
+   * Applies a rotation transform to the Canvas' current transformation.
+   */
+  template <typename T>
+  void Rotate(T x, T y, T z);
+
+  /*!
+   * Applies a scaling transform to the Canvas' current transformation.
+   */
+  template <typename T>
+  void Scale(T x, T y, T z);
+
+  template <typename T>
+  inline void Scale(const math::tVector<3, T> &v);
+
+  /*!
+   * Set Z Coordinate for 2D-Shapes painted to canvas
+   */
+  template <typename T>
+  void SetZ(T z);
+
+  /*!
+   * Draw Point
+   */
+  template <typename T>
+  void DrawPoint(T x, T y, T z);
+
+  template <typename T>
+  inline void DrawPoint(const math::tVector<3, T> &v);
+
+  /*!
+   * Draw Line
+   */
+  template <typename T>
+  void DrawLine(T x1, T y1, T z1, T x2, T y2, T z2);
+
+  template <typename T>
+  inline void DrawLine(const math::tVector<3, T> &p1, const math::tVector<3, T> &p2);
+
+  /*!
+   * Draw Line Strip
+   */
+  template <typename TIterator>
+  void DrawLines(TIterator points_begin, TIterator points_end);
+
+  template <typename TElement, typename ... TVectors>
+  void DrawLines(const math::tVector<3, TElement> &p1, const math::tVector<3, TElement> &p2, const TVectors &... rest);
+
+  /*!
+   * Draw Line Segment
+   */
+  template <typename T>
+  void DrawLineSegment(T x1, T y1, T z1, T x2, T y2, T z2);
+
+  template <typename T>
+  inline void DrawLineSegment(const math::tVector<3, T> &p1, const math::tVector<3, T> &p2);
+
+  /*!
+   * Draw arrow
+   */
+  template <typename T>
+  void DrawArrow(T x1, T y1, T z1, T x2, T y2, T z2, bool undirected = false);
+
+  template <typename T>
+  inline void DrawArrow(const math::tVector<3, T> &p1, const math::tVector<3, T> &p2, bool undirected = false);
+
+  /*!
+   * Draw Box
+   */
+  template <typename T>
+  void DrawBox(T top_left_x, T top_left_y, T top_left_z, T width, T height, T depth);
+
+  template <typename T>
+  inline void DrawBox(const math::tVector<3, T> &top_left, T width, T height, T depth);
+
+  /*!
+   * Draw Ellipsoid
+   */
+  template <typename T>
+  void DrawEllipsoid(T center_x, T center_y, T center_z, T width, T height, T depth);
+
+  template <typename T>
+  inline void DrawEllipsoid(const math::tVector<3, T> &center_position, T width, T height, T depth);
+
+  /*!
+   * Draw Bezier curve
+   */
+  template <typename TIterator>
+  void DrawBezierCurve(TIterator points_begin, TIterator points_end);
+
+  template <typename TElement, typename ... TVectors>
+  void DrawBezierCurve(const math::tVector<3, TElement> &p1, const math::tVector<3, TElement> &p2, const TVectors &... rest);
+
+  /*!
+   * Draw Polygon
+   */
+  template <typename TIterator>
+  void DrawPolygon(TIterator points_begin, TIterator points_end);
+
+  template <typename TElement, typename ... TVectors>
+  void DrawPolygon(const math::tVector<3, TElement> &p1, const math::tVector<3, TElement> &p2, const TVectors &... rest);
+
+  /*!
+   * Draw 3D Text
+   */
+  template <typename T, typename S>
+  void DrawText(T x, T y, T z, const S& text);
+
+  template <typename T, typename S>
+  void DrawText(const math::tVector<3, T> &position, const S &text);
+
+  /*!
+   * Draw 2D Text
+   */
+  template <typename T, typename S>
+  void DrawText(T x, T y, const S& text);
+
+  template <typename T, typename S>
+  inline void DrawText(const math::tVector<2, T> &position, const S &text);
+
+  /*!
+   * Draw Point Cloud
+   */
+  template <typename TIterator>
+  void DrawPointCloud(TIterator points_begin, TIterator points_end);
+
+  template <typename TElement, typename ... TVectors>
+  void DrawPointCloud(const math::tVector<3, TElement> &p1, const math::tVector<3, TElement> &p2, const TVectors &... rest);
+
+  /*!
+   * Draw Colored Point Cloud
+   */
+  template <typename TIterator>
+  void DrawColoredPointCloud(TIterator points_begin, TIterator points_end);
+
+  template <typename TElement, typename ... TVectors>
+  void DrawColoredPointCloud(const math::tVector<6, TElement> &p1, const math::tVector<6, TElement> &p2, const TVectors &... rest);
+
+
+  /*!
+   * Start a path (of lines and curves)
+   * Path ends when any of the above methods is called
+   *
+   * Specified position is start of path
+   */
+  template <typename T>
+  void StartPath(T x, T y, T z);
+
+  template <typename T>
+  inline void StartPath(const math::tVector<3, T> &p);
+
+  /*!
+   * Start a shape (with an edge of lines and curves)
+   * Shape edge ends when any of the above methods is called.
+   * Edge is closed automatically: start and end points are connected by a line.
+   *
+   * Specified position is start of edge
+   */
+  template <typename T>
+  void StartShape(T x, T y, T z);
+
+  template <typename T>
+  inline void StartShape(const math::tVector<3, T> &p);
+
+  /*!
+   * Append a line to the specified point to the current path or shape edge.
+   * (Only valid after having started a path or shape)
+   */
+  template <typename T>
+  void AppendLineSegment(T x, T y, T z);
+
+  template <typename T>
+  inline void AppendLineSegment(const math::tVector<3, T> &v);
+
+  /*!
+   * Append a quadratic curve to the current path or shape edge.
+   * Point 1 is a control points.
+   * The curves's destination will be point 2.
+   * (Only valid after having started a path or shape)
+   */
+  template <typename T>
+  void AppendQuadraticBezierCurve(T x1, T y1, T z1, T x2, T y2, T z2);
+
+  template <typename T>
+  inline void AppendQuadraticBezierCurve(const math::tVector<3, T> &p1, const math::tVector<3, T> &p2);
+
+  /*!
+   * Append a cubic bezier curve to the current path or shape edge.
+   * Points 1 and 2 are control points.
+   * The curves's destination will be point 3.
+   * (Only valid after having started a path or shape)
+   */
+  template <typename T>
+  void AppendCubicBezierCurve(T x1, T y1, T z1, T x2, T y2, T z2, T x3, T y3, T z3);
+
+  template <typename T>
+  inline void AppendCubicBezierCurve(const math::tVector<3, T>& p1, const math::tVector<3, T>& p2, const math::tVector<3, T>& p3);
+
+  //----------------------------------------------------------------------
+  // Private fields and methods
+  //----------------------------------------------------------------------
+private:
+
 
 };
 

@@ -109,10 +109,12 @@ enum tCanvasOpCode
 
   // Canvas, Draw & encoding mode
   eSET_Z,                         // [value]
-  eSET_EXTRUSION                  // [value]
+  eSET_EXTRUSION,                 // [value]
 
   // ####### tCanvas3D-only opcodes ########
-
+  eDRAW_COLORED_POINT_CLOUD,      // [number of values: N][6d vector1]...[6d vectorN]
+  eDRAW_POINT_CLOUD,              // [number of values: N][vector1]...[vectorN]
+  eDRAW_LINES                     // [number of values: N][vector1]...[vectorN]
 };
 
 enum tNumberTypeEnum

@@ -68,13 +68,9 @@ namespace canvas
 // tCanvas2D constructors
 //----------------------------------------------------------------------
 tCanvas2D::tCanvas2D()
-  : entering_path_mode(false),
-    in_path_mode(false)
 {}
 
 tCanvas2D::tCanvas2D(tCanvas2D && o)
-  : entering_path_mode(false),
-    in_path_mode(false)
 {
   tCanvas(std::forward<tCanvas>(o)),
           std::swap(entering_path_mode, o.entering_path_mode);
@@ -191,6 +187,12 @@ void tCanvas2D::DrawPoint(T x, T y)
 template <typename T>
 void tCanvas2D::DrawPoint(const math::tVector<2, T> &v)
 {
+  if (this->entering_path_mode)
+  {
+    RRLIB_LOG_PRINT(ERROR, "Just started path mode. Command has no effect.");
+    return;
+  }
+  this->in_path_mode = false;
   this->AppendCommand(eDRAW_POINT, reinterpret_cast<const T *>(&v), 2);
 }
 

@@ -229,6 +229,22 @@ public:
   void DrawSpline(TIterator points_begin, TIterator points_end, float tension = 0.0);
 
   /*!
+   * Draw Text
+   */
+  template <typename T, typename S>
+  void DrawText(T x, T y, const S& text)
+  {
+    T values[] = { x, y };
+    AppendCommand(eDRAW_STRING, values, 2);
+    this->Stream().WriteString(text);
+  }
+  template <typename T, typename S>
+  void DrawText(const math::tVector<2, T> &position, const S &text)
+  {
+    this->DrawText(position.X(), position.Y(), text);
+  }
+
+  /*!
    * Start a path (of lines and curves)
    * Path ends when any of the above methods is called
    *
@@ -291,9 +307,6 @@ public:
 // Private fields and methods
 //----------------------------------------------------------------------
 private:
-
-  bool entering_path_mode;
-  bool in_path_mode;
 
 };
 
