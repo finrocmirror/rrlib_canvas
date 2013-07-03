@@ -92,9 +92,15 @@ tCanvas2D& tCanvas2D::operator=(tCanvas2D && o)
 // tCanvas2D SetTransformation
 //----------------------------------------------------------------------
 template <typename T>
-void tCanvas2D::SetTransformation(const math::tMatrix<3, 3, T> &t)
+void tCanvas2D::SetTransformation(const math::tMatrix<3, 3, T> &transformation)
 {
-  T values[] = { t[0][0], t[1][0], t[0][1], t[1][1], t[0][2], t[1][2] };
+  // FIXME: Why this order? Check with 3D version and use one matrix order for all
+  T values[] =
+  {
+    transformation[0][0], transformation[1][0],
+    transformation[0][1], transformation[1][1],
+    transformation[0][2], transformation[1][2]
+  };
   this->AppendCommand(eSET_TRANSFORMATION, values, 6);
 }
 
@@ -107,9 +113,14 @@ inline void tCanvas2D::SetTransformation(const math::tPose2D &transformation)
 // tCanvas2D Transform
 //----------------------------------------------------------------------
 template <typename T>
-void tCanvas2D::Transform(const math::tMatrix<3, 3, T> &t)
+void tCanvas2D::Transform(const math::tMatrix<3, 3, T> &transformation)
 {
-  T values[] = { t[0][0], t[1][0], t[0][1], t[1][1], t[0][2], t[1][2] };
+  T values[] =
+  {
+    transformation[0][0], transformation[1][0],
+    transformation[0][1], transformation[1][1],
+    transformation[0][2], transformation[1][2]
+  };
   this->AppendCommand(eTRANSFORM, values, 6);
 }
 
@@ -129,18 +140,18 @@ void tCanvas2D::Translate(T x, T y)
 }
 
 template <typename T>
-void tCanvas2D::Translate(const math::tVector<2, T> &v)
+void tCanvas2D::Translate(const math::tVector<2, T> &vector)
 {
-  this->AppendCommand(eTRANSLATE, reinterpret_cast<const T *>(&v), 2);
+  this->Translate(vector.X(), vector.Y());
 }
 
 //----------------------------------------------------------------------
 // tCanvas2D Rotate
 //----------------------------------------------------------------------
 template <typename T>
-void tCanvas2D::Rotate(T x)
+void tCanvas2D::Rotate(T angle)
 {
-  AppendCommand(eROTATE, &x, 1);
+  AppendCommand(eROTATE, &angle, 1);
 }
 
 //----------------------------------------------------------------------
@@ -154,9 +165,9 @@ void tCanvas2D::Scale(T x, T y)
 }
 
 template <typename T>
-void tCanvas2D::Scale(const math::tVector<2, T> &v)
+void tCanvas2D::Scale(const math::tVector<2, T> &factor)
 {
-  this->AppendCommand(eSCALE, reinterpret_cast<const T *>(&v), 2);
+  this->Scale(factor.X(), factor.Y());
 }
 
 //----------------------------------------------------------------------
@@ -185,22 +196,16 @@ void tCanvas2D::DrawPoint(T x, T y)
 }
 
 template <typename T>
-void tCanvas2D::DrawPoint(const math::tVector<2, T> &v)
+void tCanvas2D::DrawPoint(const math::tVector<2, T> &position)
 {
-  if (this->entering_path_mode)
-  {
-    RRLIB_LOG_PRINT(ERROR, "Just started path mode. Command has no effect.");
-    return;
-  }
-  this->in_path_mode = false;
-  this->AppendCommand(eDRAW_POINT, reinterpret_cast<const T *>(&v), 2);
+  this->DrawPoint(position.X(), position.Y());
 }
 
 //----------------------------------------------------------------------
 // tCanvas2D DrawLine
 //----------------------------------------------------------------------
 template <typename T>
-void tCanvas2D::DrawLine(T x1, T y1, T x2, T y2)
+void tCanvas2D::DrawLine(T support_x, T support_y, T direction_x, T direction_y)
 {
   if (this->entering_path_mode)
   {
@@ -208,21 +213,21 @@ void tCanvas2D::DrawLine(T x1, T y1, T x2, T y2)
     return;
   }
   this->in_path_mode = false;
-  T values[] = { x1, y1, x2, y2 };
+  T values[] = { support_x, support_y, direction_x, direction_y };
   this->AppendCommand(eDRAW_LINE, values, 4);
 }
 
 template <typename T>
-void tCanvas2D::DrawLine(const math::tVector<2, T> &p1, const math::tVector<2, T> &p2)
+void tCanvas2D::DrawLine(const math::tVector<2, T> &support, const math::tVector<2, T> &direction)
 {
-  this->DrawLine(p1.X(), p1.Y(), p2.X(), p2.Y());
+  this->DrawLine(support.X(), support.Y(), direction.X(), direction.Y());
 }
 
 //----------------------------------------------------------------------
 // tCanvas2D DrawLineSegment
 //----------------------------------------------------------------------
 template <typename T>
-void tCanvas2D::DrawLineSegment(T x1, T y1, T x2, T y2)
+void tCanvas2D::DrawLineSegment(T p1_x, T p1_y, T p2_x, T p2_y)
 {
   if (this->entering_path_mode)
   {
@@ -230,7 +235,7 @@ void tCanvas2D::DrawLineSegment(T x1, T y1, T x2, T y2)
     return;
   }
   this->in_path_mode = false;
-  T values[] = { x1, y1, x2, y2 };
+  T values[] = { p1_x, p1_y, p2_x, p2_y };
   this->AppendCommand(eDRAW_LINE_SEGMENT, values, 4);
 }
 
@@ -244,7 +249,7 @@ void tCanvas2D::DrawLineSegment(const math::tVector<2, T> &p1, const math::tVect
 // tCanvas2D DrawArrow
 //----------------------------------------------------------------------
 template <typename T>
-void tCanvas2D::DrawArrow(T x1, T y1, T x2, T y2, bool undirected)
+void tCanvas2D::DrawArrow(T start_x, T start_y, T end_x, T end_y, bool undirected)
 {
   if (this->entering_path_mode)
   {
@@ -252,23 +257,23 @@ void tCanvas2D::DrawArrow(T x1, T y1, T x2, T y2, bool undirected)
     return;
   }
   this->in_path_mode = false;
-  T values[] = { x1, y1, x2, y2 };
+  T values[] = { start_x, start_y, end_x, end_y };
   this->AppendCommandRaw(eDRAW_ARROW);
   this->Stream().WriteBoolean(undirected);
   this->AppendData(values, values + 4);
 }
 
 template <typename T>
-void tCanvas2D::DrawArrow(const math::tVector<2, T> &p1, const math::tVector<2, T> &p2, bool undirected)
+void tCanvas2D::DrawArrow(const math::tVector<2, T> &start, const math::tVector<2, T> &end, bool undirected)
 {
-  this->DrawArrow(p1.X(), p1.Y(), p2.X(), p2.Y(), undirected);
+  this->DrawArrow(start.X(), start.Y(), end.X(), end.Y(), undirected);
 }
 
 //----------------------------------------------------------------------
 // tCanvas2D DrawBox
 //----------------------------------------------------------------------
 template <typename T>
-void tCanvas2D::DrawBox(T top_left_x, T top_left_y, T width, T height)
+void tCanvas2D::DrawBox(T bottom_left_x, T bottom_left_y, T width, T height)
 {
   if (this->entering_path_mode)
   {
@@ -276,14 +281,14 @@ void tCanvas2D::DrawBox(T top_left_x, T top_left_y, T width, T height)
     return;
   }
   this->in_path_mode = false;
-  T values[] = { top_left_x, top_left_y, width, height };
+  T values[] = { bottom_left_x, bottom_left_y, width, height };
   this->AppendCommand(eDRAW_BOX, values, 4);
 }
 
 template <typename T>
-void tCanvas2D::DrawBox(const math::tVector<2, T> &top_left, T width, T height)
+void tCanvas2D::DrawBox(const math::tVector<2, T> &bottom_left, T width, T height)
 {
-  this->DrawBox(top_left.X(), top_left.Y(), width, height);
+  this->DrawBox(bottom_left.X(), bottom_left.Y(), width, height);
 }
 
 //----------------------------------------------------------------------
@@ -298,14 +303,18 @@ void tCanvas2D::DrawEllipsoid(T center_x, T center_y, T width, T height)
     return;
   }
   this->in_path_mode = false;
+  if (height == -1)
+  {
+    height = width;
+  }
   T values[] = { center_x - width / 2, center_y - height / 2, width, height };
   this->AppendCommand(eDRAW_ELLIPSOID, values, 4);
 }
 
 template <typename T>
-void tCanvas2D::DrawEllipsoid(const math::tVector<2, T> &center_position, T width, T height)
+void tCanvas2D::DrawEllipsoid(const math::tVector<2, T> &center, T width, T height)
 {
-  this->DrawEllipsoid(center_position.X(), center_position.Y(), width, height);
+  this->DrawEllipsoid(center.X(), center.Y(), width, height);
 }
 
 //----------------------------------------------------------------------
@@ -461,7 +470,7 @@ void tCanvas2D::AppendLineSegment(const math::tVector<2, T>& v)
 // tCanvas2D AppendQuadraticBezierCurve
 //----------------------------------------------------------------------
 template <typename T>
-void tCanvas2D::AppendQuadraticBezierCurve(T x1, T y1, T x2, T y2)
+void tCanvas2D::AppendQuadraticBezierCurve(T p1_x, T p1_y, T p2_x, T p2_y)
 {
   if (!this->in_path_mode)
   {
@@ -469,7 +478,7 @@ void tCanvas2D::AppendQuadraticBezierCurve(T x1, T y1, T x2, T y2)
     return;
   }
   this->entering_path_mode = false;
-  T values[] = { x1, y1, x2, y2 };
+  T values[] = { p1_x, p1_y, p2_x, p2_y };
   this->AppendCommand(ePATH_QUADRATIC_BEZIER_CURVE, values, 4);
 }
 
@@ -483,7 +492,7 @@ void tCanvas2D::AppendQuadraticBezierCurve(const math::tVector<2, T> &p1, const 
 // tCanvas2D AppendCubicBezierCurve
 //----------------------------------------------------------------------
 template <typename T>
-void tCanvas2D::AppendCubicBezierCurve(T x1, T y1, T x2, T y2, T x3, T y3)
+void tCanvas2D::AppendCubicBezierCurve(T p1_x, T p1_y, T p2_x, T p2_y, T p3_x, T p3_y)
 {
   if (!this->in_path_mode)
   {
@@ -491,7 +500,7 @@ void tCanvas2D::AppendCubicBezierCurve(T x1, T y1, T x2, T y2, T x3, T y3)
     return;
   }
   this->entering_path_mode = false;
-  T values[] = { x1, y1, x2, y2, x3, y3 };
+  T values[] = { p1_x, p1_y, p2_x, p2_y, p3_x, p3_y };
   this->AppendCommand(ePATH_CUBIC_BEZIER_CURVE, values, 6);
 }
 

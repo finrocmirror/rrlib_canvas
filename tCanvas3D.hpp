@@ -95,10 +95,15 @@ tCanvas3D& tCanvas3D::operator=(tCanvas3D && o)
 // tCanvas3D SetTransformation
 //----------------------------------------------------------------------
 template<typename T>
-void tCanvas3D::SetTransformation(const math::tMatrix<4, 4, T> &t)
+void tCanvas3D::SetTransformation(const math::tMatrix<4, 4, T> &transformation)
 {
-  // rotation, translation, perspective
-  T values[] = { t[0][0], t[0][1], t[0][2], t[0][3], t[1][0], t[1][1], t[1][2], t[1][3], t[2][0], t[2][1], t[2][2], t[2][3], t[3][0], t[3][1], t[3][2], t[3][3] };
+  T values[] =
+  {
+    transformation[0][0], transformation[0][1], transformation[0][2], transformation[0][3],
+    transformation[1][0], transformation[1][1], transformation[1][2], transformation[1][3],
+    transformation[2][0], transformation[2][1], transformation[2][2], transformation[2][3],
+    transformation[3][0], transformation[3][1], transformation[3][2], transformation[3][3]
+  };
   this->AppendCommand(eSET_TRANSFORMATION, values, 16);
 }
 
@@ -111,9 +116,15 @@ inline void tCanvas3D::SetTransformation(const math::tPose3D &transformation)
 // tCanvas3D Transform
 //----------------------------------------------------------------------
 template<typename T>
-void tCanvas3D::Transform(const math::tMatrix<4, 4, T> &t)
+void tCanvas3D::Transform(const math::tMatrix<4, 4, T> &transformation)
 {
-  T values[] = { t[0][0], t[0][1], t[0][2], t[0][3], t[1][0], t[1][1], t[1][2], t[1][3], t[2][0], t[2][1], t[2][2], t[2][3], t[3][0], t[3][1], t[3][2], t[3][3] };
+  T values[] =
+  {
+    transformation[0][0], transformation[0][1], transformation[0][2], transformation[0][3],
+    transformation[1][0], transformation[1][1], transformation[1][2], transformation[1][3],
+    transformation[2][0], transformation[2][1], transformation[2][2], transformation[2][3],
+    transformation[3][0], transformation[3][1], transformation[3][2], transformation[3][3]
+  };
   this->AppendCommand(eTRANSFORM, values, 16);
 }
 
@@ -133,9 +144,9 @@ void tCanvas3D::Translate(T x, T y, T z)
 }
 
 template<typename T>
-void tCanvas3D::Translate(const math::tVector<3, T> &v)
+void tCanvas3D::Translate(const math::tVector<3, T> &vector)
 {
-  this->AppendCommand(eTRANSLATE, reinterpret_cast<const T *>(&v), 3);
+  this->Translate(vector.X(), vector.Y(), vector.Z());
 }
 
 //----------------------------------------------------------------------
@@ -159,9 +170,9 @@ void tCanvas3D::Scale(T x, T y, T z)
 }
 
 template<typename T>
-void tCanvas3D::Scale(const math::tVector<3, T> &v)
+void tCanvas3D::Scale(const math::tVector<3, T> &vector)
 {
-  this->AppendCommand(eSCALE, reinterpret_cast<const T *>(&v), 3);
+  this->Scale(vector.X(), vector.Y(), vector.Z());
 }
 
 //----------------------------------------------------------------------
@@ -190,22 +201,16 @@ void tCanvas3D::DrawPoint(T x, T y, T z)
 }
 
 template<typename T>
-void tCanvas3D::DrawPoint(const math::tVector<3, T> &v)
+void tCanvas3D::DrawPoint(const math::tVector<3, T> &position)
 {
-  if (this->entering_path_mode)
-  {
-    RRLIB_LOG_PRINT(ERROR, "Just started path mode. Command has no effect.");
-    return;
-  }
-  this->in_path_mode = false;
-  this->AppendCommand(eDRAW_POINT, reinterpret_cast<const T *>(&v), 3);
+  this->DrawPoint(position.X(), position.Y(), position.Z());
 }
 
 //----------------------------------------------------------------------
 // tCanvas3D DrawLine
 //----------------------------------------------------------------------
 template<typename T>
-void tCanvas3D::DrawLine(T x1, T y1, T z1, T x2, T y2, T z2)
+void tCanvas3D::DrawLine(T support_x, T support_y, T support_z, T direction_x, T direction_y, T direction_z)
 {
   if (this->entering_path_mode)
   {
@@ -213,21 +218,21 @@ void tCanvas3D::DrawLine(T x1, T y1, T z1, T x2, T y2, T z2)
     return;
   }
   this->in_path_mode = false;
-  T values[] = { x1, y1, z1, x2, y2, z2 };
+  T values[] = { support_x, support_y, support_z, direction_x, direction_y, direction_z };
   this->AppendCommand(eDRAW_LINE, values, 6);
 }
 
 template<typename T>
-void tCanvas3D::DrawLine(const math::tVector<3, T> &p1, const math::tVector<3, T> &p2)
+void tCanvas3D::DrawLine(const math::tVector<3, T> &support, const math::tVector<3, T> &direction)
 {
-  this->DrawLine(p1.X(), p1.Y(), p1.Z(), p2.X(), p2.Y(), p2.Z());
+  this->DrawLine(support.X(), support.Y(), support.Z(), direction.X(), direction.Y(), direction.Z());
 }
 
 //----------------------------------------------------------------------
-// tCanvas3D DrawLines
+// tCanvas3D DrawLineStrip
 //----------------------------------------------------------------------
 template<typename TIterator>
-void tCanvas3D::DrawLines(TIterator points_begin, TIterator points_end)
+void tCanvas3D::DrawLineStrip(TIterator points_begin, TIterator points_end)
 {
   if (this->entering_path_mode)
   {
@@ -235,13 +240,13 @@ void tCanvas3D::DrawLines(TIterator points_begin, TIterator points_end)
     return;
   }
   this->in_path_mode = false;
-  this->AppendCommandRaw(eDRAW_LINES);
+  this->AppendCommandRaw(eDRAW_LINE_STRIP);
   this->Stream().WriteInt(std::distance(points_begin, points_end));
   this->AppendData(points_begin, points_end);
 }
 
 template<typename TElement, typename ... TVectors>
-void tCanvas3D::DrawLines(const math::tVector<3, TElement> &p1, const math::tVector<3, TElement> &p2, const TVectors &... rest)
+void tCanvas3D::DrawLineStrip(const math::tVector<3, TElement> &p1, const math::tVector<3, TElement> &p2, const TVectors &... rest)
 {
   typedef math::tVector<3, TElement> tVector;
   const size_t number_of_points = 2 + sizeof...(rest);
@@ -251,14 +256,14 @@ void tCanvas3D::DrawLines(const math::tVector<3, TElement> &p1, const math::tVec
   util::ProcessVariadicValues<tVector>([p](const tVector & value) mutable
   { *p = value; ++p;}, p1, p2, rest...);
 
-  this->DrawLines(buffer, buffer + number_of_points);
+  this->DrawLineStrip(buffer, buffer + number_of_points);
 }
 
 //----------------------------------------------------------------------
 // tCanvas3D DrawLineSegment
 //----------------------------------------------------------------------
 template<typename T>
-void tCanvas3D::DrawLineSegment(T x1, T y1, T z1, T x2, T y2, T z2)
+void tCanvas3D::DrawLineSegment(T p1_x, T p1_y, T p1_z, T p2_x, T p2_y, T p2_z)
 {
   if (this->entering_path_mode)
   {
@@ -266,7 +271,7 @@ void tCanvas3D::DrawLineSegment(T x1, T y1, T z1, T x2, T y2, T z2)
     return;
   }
   this->in_path_mode = false;
-  T values[] = { x1, y1, z1, x2, y2, z2 };
+  T values[] = { p1_x, p1_y, p1_z, p2_x, p2_y, p2_z };
   this->AppendCommand(eDRAW_LINE_SEGMENT, values, 6);
 }
 
@@ -280,7 +285,7 @@ void tCanvas3D::DrawLineSegment(const math::tVector<3, T> &p1, const math::tVect
 // tCanvas3D DrawArrow
 //----------------------------------------------------------------------
 template<typename T>
-void tCanvas3D::DrawArrow(T x1, T y1, T z1, T x2, T y2, T z2, bool undirected)
+void tCanvas3D::DrawArrow(T p1_x, T p1_y, T p1_z, T p2_x, T p2_y, T p2_z, bool undirected)
 {
   if (this->entering_path_mode)
   {
@@ -288,7 +293,7 @@ void tCanvas3D::DrawArrow(T x1, T y1, T z1, T x2, T y2, T z2, bool undirected)
     return;
   }
   this->in_path_mode = false;
-  T values[] = { x1, y1, z1, x2, y2, z2 };
+  T values[] = { p1_x, p1_y, p1_z, p2_x, p2_y, p2_z };
   this->AppendCommandRaw(eDRAW_ARROW);
   this->Stream().WriteBoolean(undirected);
   this->AppendData(values, values + 6);
@@ -304,7 +309,7 @@ void tCanvas3D::DrawArrow(const math::tVector<3, T> &p1, const math::tVector<3, 
 // tCanvas3D DrawBox
 //----------------------------------------------------------------------
 template<typename T>
-void tCanvas3D::DrawBox(T top_left_x, T top_left_y, T top_left_z, T width, T height, T depth)
+void tCanvas3D::DrawBox(T bottom_left_x, T bottom_left_y, T bottom_left_z, T width, T height, T depth)
 {
   if (this->entering_path_mode)
   {
@@ -312,14 +317,14 @@ void tCanvas3D::DrawBox(T top_left_x, T top_left_y, T top_left_z, T width, T hei
     return;
   }
   this->in_path_mode = false;
-  T values[] = { top_left_x, top_left_y, top_left_z, width, height, depth };
+  T values[] = { bottom_left_x, bottom_left_y, bottom_left_z, width, height, depth };
   this->AppendCommand(eDRAW_BOX, values, 6);
 }
 
 template<typename T>
-void tCanvas3D::DrawBox(const math::tVector<3, T> &top_left, T width, T height, T depth)
+void tCanvas3D::DrawBox(const math::tVector<3, T> &bottom_left, T width, T height, T depth)
 {
-  this->DrawBox(top_left.X(), top_left.Y(), top_left.Z(), width, height, depth);
+  this->DrawBox(bottom_left.X(), bottom_left.Y(), bottom_left.Z(), width, height, depth);
 }
 
 //----------------------------------------------------------------------
@@ -339,9 +344,9 @@ void tCanvas3D::DrawEllipsoid(T center_x, T center_y, T center_z, T width, T hei
 }
 
 template<typename T>
-void tCanvas3D::DrawEllipsoid(const math::tVector<3, T> &center_position, T width, T height, T depth)
+void tCanvas3D::DrawEllipsoid(const math::tVector<3, T> &center, T width, T height, T depth)
 {
-  this->DrawEllipsoid(center_position.X(), center_position.Y(), center_position.Z(), width, height, depth);
+  this->DrawEllipsoid(center.X(), center.Y(), center.Z(), width, height, depth);
 }
 
 //----------------------------------------------------------------------

@@ -108,7 +108,7 @@ public:
    * (=> when this code fragment is never used on top of another transformation)
    */
   template <typename T>
-  void SetTransformation(const math::tMatrix<4, 4, T> &t);
+  void SetTransformation(const math::tMatrix<4, 4, T> &transformation);
 
   inline void SetTransformation(const math::tPose3D &transformation);
 
@@ -117,7 +117,7 @@ public:
    * (according to the rule last-specified-first-applied)
    */
   template <typename T>
-  void Transform(const math::tMatrix<4, 4, T> &t);
+  void Transform(const math::tMatrix<4, 4, T> &transformation);
 
   inline void Transform(const math::tPose3D &transformation);
 
@@ -128,10 +128,10 @@ public:
   void Translate(T x, T y, T z);
 
   template <typename T>
-  void Translate(const math::tVector<3, T> &v);
+  void Translate(const math::tVector<3, T> &vector);
 
   /*!
-   * Applies a rotation transform to the Canvas' current transformation.
+   * Applies a rotation transform to the Canvas' current transformation. // FIXME: Better names for arguments
    */
   template <typename T>
   void Rotate(T x, T y, T z);
@@ -158,31 +158,31 @@ public:
   void DrawPoint(T x, T y, T z);
 
   template <typename T>
-  inline void DrawPoint(const math::tVector<3, T> &v);
+  inline void DrawPoint(const math::tVector<3, T> &position);
 
   /*!
    * Draw Line
    */
   template <typename T>
-  void DrawLine(T x1, T y1, T z1, T x2, T y2, T z2);
+  void DrawLine(T support_x, T support_y, T support_z, T direction_x, T direction_y, T direction_z);
 
   template <typename T>
-  inline void DrawLine(const math::tVector<3, T> &p1, const math::tVector<3, T> &p2);
+  inline void DrawLine(const math::tVector<3, T> &support, const math::tVector<3, T> &direction);
 
   /*!
    * Draw Line Strip
    */
   template <typename TIterator>
-  void DrawLines(TIterator points_begin, TIterator points_end);
+  void DrawLineStrip(TIterator points_begin, TIterator points_end);
 
   template <typename TElement, typename ... TVectors>
-  void DrawLines(const math::tVector<3, TElement> &p1, const math::tVector<3, TElement> &p2, const TVectors &... rest);
+  void DrawLineStrip(const math::tVector<3, TElement> &p1, const math::tVector<3, TElement> &p2, const TVectors &... rest);
 
   /*!
    * Draw Line Segment
    */
   template <typename T>
-  void DrawLineSegment(T x1, T y1, T z1, T x2, T y2, T z2);
+  void DrawLineSegment(T p1_x, T p1_y, T p1_z, T p2_x, T p2_y, T p2_z);
 
   template <typename T>
   inline void DrawLineSegment(const math::tVector<3, T> &p1, const math::tVector<3, T> &p2);
@@ -191,28 +191,28 @@ public:
    * Draw arrow
    */
   template <typename T>
-  void DrawArrow(T x1, T y1, T z1, T x2, T y2, T z2, bool undirected = false);
+  void DrawArrow(T start_x, T start_y, T start_z, T end_x, T end_y, T end_z, bool undirected = false);
 
   template <typename T>
-  inline void DrawArrow(const math::tVector<3, T> &p1, const math::tVector<3, T> &p2, bool undirected = false);
+  inline void DrawArrow(const math::tVector<3, T> &start, const math::tVector<3, T> &end, bool undirected = false);
 
   /*!
    * Draw Box
    */
   template <typename T>
-  void DrawBox(T top_left_x, T top_left_y, T top_left_z, T width, T height, T depth);
+  void DrawBox(T bottom_left_x, T bottom_left_y, T bottom_left_z, T width, T height = -1, T depth = -1);
 
   template <typename T>
-  inline void DrawBox(const math::tVector<3, T> &top_left, T width, T height, T depth);
+  inline void DrawBox(const math::tVector<3, T> &bottom_left, T width, T height = -1, T depth = -1);
 
   /*!
    * Draw Ellipsoid
    */
   template <typename T>
-  void DrawEllipsoid(T center_x, T center_y, T center_z, T width, T height, T depth);
+  void DrawEllipsoid(T center_x, T center_y, T center_z, T width, T height = -1, T depth = -1);
 
   template <typename T>
-  inline void DrawEllipsoid(const math::tVector<3, T> &center_position, T width, T height, T depth);
+  inline void DrawEllipsoid(const math::tVector<3, T> &center, T width, T height = -1, T depth = -1);
 
   /*!
    * Draw Bezier curve
@@ -302,7 +302,7 @@ public:
   void AppendLineSegment(T x, T y, T z);
 
   template <typename T>
-  inline void AppendLineSegment(const math::tVector<3, T> &v);
+  inline void AppendLineSegment(const math::tVector<3, T> &p);
 
   /*!
    * Append a quadratic curve to the current path or shape edge.
@@ -311,7 +311,7 @@ public:
    * (Only valid after having started a path or shape)
    */
   template <typename T>
-  void AppendQuadraticBezierCurve(T x1, T y1, T z1, T x2, T y2, T z2);
+  void AppendQuadraticBezierCurve(T p1_x, T p1_y, T p1_z, T p2_x, T p2_y, T p2_z);
 
   template <typename T>
   inline void AppendQuadraticBezierCurve(const math::tVector<3, T> &p1, const math::tVector<3, T> &p2);
@@ -323,7 +323,7 @@ public:
    * (Only valid after having started a path or shape)
    */
   template <typename T>
-  void AppendCubicBezierCurve(T x1, T y1, T z1, T x2, T y2, T z2, T x3, T y3, T z3);
+  void AppendCubicBezierCurve(T p1_x, T p1_y, T p1_z, T p2_x, T p2_y, T p2_z, T p3_x, T p3_y, T p3_z);
 
   template <typename T>
   inline void AppendCubicBezierCurve(const math::tVector<3, T>& p1, const math::tVector<3, T>& p2, const math::tVector<3, T>& p3);
