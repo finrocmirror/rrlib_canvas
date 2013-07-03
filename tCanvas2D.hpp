@@ -246,6 +246,37 @@ void tCanvas2D::DrawLineSegment(const math::tVector<2, T> &p1, const math::tVect
 }
 
 //----------------------------------------------------------------------
+// tCanvas2D DrawLineStrip
+//----------------------------------------------------------------------
+template<typename TIterator>
+void tCanvas2D::DrawLineStrip(TIterator points_begin, TIterator points_end)
+{
+  if (this->entering_path_mode)
+  {
+    RRLIB_LOG_PRINT(ERROR, "Just started path mode. Command has no effect.");
+    return;
+  }
+  this->in_path_mode = false;
+  this->AppendCommandRaw(eDRAW_LINE_STRIP);
+  this->Stream().WriteInt(std::distance(points_begin, points_end));
+  this->AppendData(points_begin, points_end);
+}
+
+template<typename TElement, typename ... TVectors>
+void tCanvas2D::DrawLineStrip(const math::tVector<2, TElement> &p1, const math::tVector<2, TElement> &p2, const TVectors &... rest)
+{
+  typedef math::tVector<2, TElement> tVector;
+  const size_t number_of_points = 2 + sizeof...(rest);
+
+  tVector buffer[number_of_points];
+  tVector *p = buffer;
+  util::ProcessVariadicValues<tVector>([p](const tVector & value) mutable
+  { *p = value; ++p;}, p1, p2, rest...);
+
+  this->DrawLineStrip(buffer, buffer + number_of_points);
+}
+
+//----------------------------------------------------------------------
 // tCanvas2D DrawArrow
 //----------------------------------------------------------------------
 template <typename T>

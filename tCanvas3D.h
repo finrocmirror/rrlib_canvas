@@ -170,15 +170,6 @@ public:
   inline void DrawLine(const math::tVector<3, T> &support, const math::tVector<3, T> &direction);
 
   /*!
-   * Draw Line Strip
-   */
-  template <typename TIterator>
-  void DrawLineStrip(TIterator points_begin, TIterator points_end);
-
-  template <typename TElement, typename ... TVectors>
-  void DrawLineStrip(const math::tVector<3, TElement> &p1, const math::tVector<3, TElement> &p2, const TVectors &... rest);
-
-  /*!
    * Draw Line Segment
    */
   template <typename T>
@@ -186,6 +177,15 @@ public:
 
   template <typename T>
   inline void DrawLineSegment(const math::tVector<3, T> &p1, const math::tVector<3, T> &p2);
+
+  /*!
+   * Draw Line Strip
+   */
+  template <typename TIterator>
+  void DrawLineStrip(TIterator points_begin, TIterator points_end);
+
+  template <typename TElement, typename ... TVectors>
+  void DrawLineStrip(const math::tVector<3, TElement> &p1, const math::tVector<3, TElement> &p2, const TVectors &... rest);
 
   /*!
    * Draw arrow

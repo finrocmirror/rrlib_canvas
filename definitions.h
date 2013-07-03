@@ -89,6 +89,7 @@ enum tCanvasOpCode
   eDRAW_POINT,                    // [vector]
   eDRAW_LINE,                     // [vector][vector]
   eDRAW_LINE_SEGMENT,             // [vector][vector]
+  eDRAW_LINE_STRIP,               // [number of values: N][vector1]...[vectorN]
   eDRAW_ARROW,                    // [bool][vector][vector]
   eDRAW_BOX,                      // [vector][size1]...[sizeN]
   eDRAW_ELLIPSOID,                // [vector][diameter1]...[diameterN]
@@ -113,8 +114,7 @@ enum tCanvasOpCode
 
   // ####### tCanvas3D-only opcodes ########
   eDRAW_COLORED_POINT_CLOUD,      // [number of values: N][6d vector1]...[6d vectorN]
-  eDRAW_POINT_CLOUD,              // [number of values: N][vector1]...[vectorN]
-  eDRAW_LINE_STRIP                // [number of values: N][vector1]...[vectorN]
+  eDRAW_POINT_CLOUD               // [number of values: N][vector1]...[vectorN]
 };
 
 enum tNumberTypeEnum

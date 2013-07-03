@@ -229,6 +229,28 @@ void tCanvas3D::DrawLine(const math::tVector<3, T> &support, const math::tVector
 }
 
 //----------------------------------------------------------------------
+// tCanvas3D DrawLineSegment
+//----------------------------------------------------------------------
+template<typename T>
+void tCanvas3D::DrawLineSegment(T p1_x, T p1_y, T p1_z, T p2_x, T p2_y, T p2_z)
+{
+  if (this->entering_path_mode)
+  {
+    RRLIB_LOG_PRINT(ERROR, "Just started path mode. Command has no effect.");
+    return;
+  }
+  this->in_path_mode = false;
+  T values[] = { p1_x, p1_y, p1_z, p2_x, p2_y, p2_z };
+  this->AppendCommand(eDRAW_LINE_SEGMENT, values, 6);
+}
+
+template<typename T>
+void tCanvas3D::DrawLineSegment(const math::tVector<3, T> &p1, const math::tVector<3, T> &p2)
+{
+  this->DrawLineSegment(p1.X(), p1.Y(), p1.Z(), p2.X(), p2.Y(), p2.Z());
+}
+
+//----------------------------------------------------------------------
 // tCanvas3D DrawLineStrip
 //----------------------------------------------------------------------
 template<typename TIterator>
@@ -257,28 +279,6 @@ void tCanvas3D::DrawLineStrip(const math::tVector<3, TElement> &p1, const math::
   { *p = value; ++p;}, p1, p2, rest...);
 
   this->DrawLineStrip(buffer, buffer + number_of_points);
-}
-
-//----------------------------------------------------------------------
-// tCanvas3D DrawLineSegment
-//----------------------------------------------------------------------
-template<typename T>
-void tCanvas3D::DrawLineSegment(T p1_x, T p1_y, T p1_z, T p2_x, T p2_y, T p2_z)
-{
-  if (this->entering_path_mode)
-  {
-    RRLIB_LOG_PRINT(ERROR, "Just started path mode. Command has no effect.");
-    return;
-  }
-  this->in_path_mode = false;
-  T values[] = { p1_x, p1_y, p1_z, p2_x, p2_y, p2_z };
-  this->AppendCommand(eDRAW_LINE_SEGMENT, values, 6);
-}
-
-template<typename T>
-void tCanvas3D::DrawLineSegment(const math::tVector<3, T> &p1, const math::tVector<3, T> &p2)
-{
-  this->DrawLineSegment(p1.X(), p1.Y(), p1.Z(), p2.X(), p2.Y(), p2.Z());
 }
 
 //----------------------------------------------------------------------
