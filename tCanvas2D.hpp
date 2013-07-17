@@ -258,7 +258,7 @@ void tCanvas2D::DrawLineStrip(TIterator points_begin, TIterator points_end)
   }
   this->in_path_mode = false;
   this->AppendCommandRaw(eDRAW_LINE_STRIP);
-  this->Stream().WriteInt(std::distance(points_begin, points_end));
+  this->Stream().WriteShort(std::distance(points_begin, points_end));
   this->AppendData(points_begin, points_end);
 }
 
