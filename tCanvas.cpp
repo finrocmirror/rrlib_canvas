@@ -33,6 +33,7 @@
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
+#include "rrlib/logging/messages.h"
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -112,16 +113,14 @@ void tCanvas::Clear()
 
 rrlib::serialization::tOutputStream& rrlib::canvas::operator << (rrlib::serialization::tOutputStream& stream, const tCanvas& canvas)
 {
-  stream.WriteLong(canvas.stream->GetWriteSize());
-  stream.Write(canvas.buffer->GetBuffer(), 0u, canvas.stream->GetWriteSize());
+  canvas.stream->Flush();
+  stream << (*canvas.buffer);
   return stream;
 }
 
 rrlib::serialization::tInputStream& rrlib::canvas::operator >> (rrlib::serialization::tInputStream& stream, tCanvas& canvas)
 {
   stream >> (*canvas.buffer);
+  canvas.stream->Seek(canvas.buffer->GetSize());
   return stream;
 }
-
-
-
