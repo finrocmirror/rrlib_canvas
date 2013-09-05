@@ -406,8 +406,7 @@ void tCanvas3D::DrawPolygon(const math::tVector<3, TElement> &p1, const math::tV
 
   tVector buffer[number_of_points];
   tVector *p = buffer;
-  util::ProcessVariadicValues<tVector>([p](const tVector & value) mutable
-  { *p = value; ++p;}, p1, p2, rest...);
+  util::ProcessVariadicValues([p](const tVector & value) mutable { *p = value; ++p;}, p1, p2, rest...);
 
   this->DrawPolygon(buffer, buffer + number_of_points);
 }
