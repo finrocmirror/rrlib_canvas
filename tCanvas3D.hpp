@@ -275,7 +275,7 @@ void tCanvas3D::DrawLineStrip(const math::tVector<3, TElement> &p1, const math::
 
   tVector buffer[number_of_points];
   tVector *p = buffer;
-  util::ProcessVariadicValues<tVector>([p](const tVector & value) mutable
+  util::ProcessVariadicValues([p](const tVector & value) mutable
   { *p = value; ++p;}, p1, p2, rest...);
 
   this->DrawLineStrip(buffer, buffer + number_of_points);
@@ -375,7 +375,7 @@ void tCanvas3D::DrawBezierCurve(const math::tVector<3, TElement> &p1, const math
 
   tVector buffer[number_of_points];
   tVector *p = buffer;
-  util::ProcessVariadicValues<tVector>([p](const tVector & value) mutable
+  util::ProcessVariadicValues([p](const tVector & value) mutable
   { *p = value; ++p;}, p1, p2, rest...);
 
   this->DrawBezierCurve(buffer, buffer + number_of_points);
@@ -482,7 +482,7 @@ void tCanvas3D::DrawPointCloud(const math::tVector<3, TElement> &p1, const math:
 
   tVector buffer[number_of_points];
   tVector *p = buffer;
-  util::ProcessVariadicValues<tVector>([p](const tVector & value) mutable
+  util::ProcessVariadicValues([p](const tVector & value) mutable
   { *p = value; ++p;}, p1, p2, rest...);
 
   this->DrawPointCloud(buffer, buffer + number_of_points);
@@ -513,7 +513,7 @@ void tCanvas3D::DrawColoredPointCloud(const math::tVector<6, TElement> &p1, cons
 
   tVector buffer[number_of_points];
   tVector *p = buffer;
-  util::ProcessVariadicValues<tVector>([p](const tVector & value) mutable
+  util::ProcessVariadicValues([p](const tVector & value) mutable
   { *p = value; ++p;}, p1, p2, rest...);
 
   this->DrawColoredPointCloud(buffer, buffer + number_of_points);
