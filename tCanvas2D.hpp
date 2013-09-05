@@ -270,8 +270,11 @@ void tCanvas2D::DrawLineStrip(const math::tVector<2, TElement> &p1, const math::
 
   tVector buffer[number_of_points];
   tVector *p = buffer;
-  util::ProcessVariadicValues([p](const tVector & value) mutable
-  { *p = value; ++p;}, p1, p2, rest...);
+  util::ProcessVariadicValues([&p](const tVector & value)
+  {
+    *p++ = value;
+  },
+  p1, p2, rest...);
 
   this->DrawLineStrip(buffer, buffer + number_of_points);
 }
@@ -374,7 +377,11 @@ void tCanvas2D::DrawBezierCurve(const math::tVector<2, TElement> &p1, const math
 
   tVector buffer[number_of_points];
   tVector *p = buffer;
-  util::ProcessVariadicValues([p](const tVector & value) mutable { *p = value; ++p; }, p1, p2, rest...);
+  util::ProcessVariadicValues([&p](const tVector & value)
+  {
+    *p++ = value;
+  },
+  p1, p2, rest...);
 
   this->DrawBezierCurve(buffer, buffer + number_of_points);
 }
@@ -404,7 +411,11 @@ void tCanvas2D::DrawPolygon(const math::tVector<2, TElement> &p1, const math::tV
 
   tVector buffer[number_of_points];
   tVector *p = buffer;
-  util::ProcessVariadicValues([p](const tVector & value) mutable { *p = value; ++p; }, p1, p2, rest...);
+  util::ProcessVariadicValues([&p](const tVector & value)
+  {
+    *p++ = value;
+  },
+  p1, p2, rest...);
 
   this->DrawPolygon(buffer, buffer + number_of_points);
 }
