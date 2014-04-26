@@ -231,7 +231,14 @@ protected:
   {
     // TODO could be optimized
     (*this->stream) << static_cast<uint8_t>(opcode) << static_cast<uint8_t>(tNumberType<T>::value);
+#if __BYTE_ORDER == __ORDER_BIG_ENDIAN
+    for (size_t i = 0; i < value_count; i++)
+    {
+      this->stream->WriteNumber<T>(values[i]);
+    }
+#else
     this->stream->Write(values, value_count * sizeof(T));
+#endif
   }
 
   /*!
