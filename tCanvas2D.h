@@ -101,6 +101,18 @@ public:
   inline tCanvas2D& operator=(tCanvas2D && o);
 
   /*!
+   * Set default viewport for viewing this canvas.
+   * This is a hint for e.g. finstruct, which part of the canvas to show by default.
+   *
+   * (If called directly after Clear(), the canvas is 9 byte smaller, as no offset is prepended)
+   */
+  template <typename T>
+  void SetDefaultViewport(T bottom_left_x, T bottom_left_y, T width, T height = -1);
+
+  template <typename T>
+  inline void SetDefaultViewport(const math::tVector<2, T> &bottom_left, T width, T height = -1);
+
+  /*!
    * Set affine transformation of all following operations
    * Overwrites current transform completely.
    * Should only be used when this is not a problem

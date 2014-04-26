@@ -219,6 +219,9 @@ protected:
   bool entering_path_mode;
   bool in_path_mode;
 
+  /*! Offset of (any) default viewport in canvas */
+  size_t default_viewport_offset;
+
   /*!
    * Adds command to canvas data
    *
@@ -293,7 +296,6 @@ private:
 
   /*! Stream to serialize to disposable geometry buffer */
   std::unique_ptr<rrlib::serialization::tOutputStream> stream;
-
 };
 
 serialization::tOutputStream& operator << (serialization::tOutputStream& stream, const tCanvas& canvas);

@@ -65,6 +65,9 @@ namespace canvas
  * [vector] is 2 coordinates in 2D and 3 coordinates in 3D mode.
  * K is 2 in 2D and 3 in 3D mode.
  * Values are encoded as float or double depending on canvas mode.
+ *
+ * Important: Any new opcodes must be appended to the back to retain
+ *            binary compatibility
  */
 enum tCanvasOpCode
 {
@@ -113,8 +116,14 @@ enum tCanvasOpCode
   eSET_EXTRUSION,                 // [value]
 
   // ####### tCanvas3D-only opcodes ########
+
   eDRAW_COLORED_POINT_CLOUD,      // [number of values: N][6d vector1]...[6d vectorN]
-  eDRAW_POINT_CLOUD               // [number of values: N][vector1]...[vectorN]
+  eDRAW_POINT_CLOUD,              // [number of values: N][vector1]...[vectorN]
+
+  // ####### Opcodes added after Finroc 13.10 ########
+
+  eDEFAULT_VIEWPORT,              // 2d: [left,bottom,width,height]  3d: yet undefined (could be tPose3D)
+  eDEFAULT_VIEWPORT_OFFSET        // [int64 absolute offset]
 };
 
 enum tNumberTypeEnum

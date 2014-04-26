@@ -70,11 +70,9 @@ namespace canvas
 tCanvas2D::tCanvas2D()
 {}
 
-tCanvas2D::tCanvas2D(tCanvas2D && o)
+tCanvas2D::tCanvas2D(tCanvas2D && o) :
+  tCanvas(std::forward<tCanvas>(o))
 {
-  tCanvas(std::forward<tCanvas>(o)),
-          std::swap(entering_path_mode, o.entering_path_mode);
-  std::swap(in_path_mode, o.in_path_mode);
 }
 
 //----------------------------------------------------------------------
@@ -83,9 +81,24 @@ tCanvas2D::tCanvas2D(tCanvas2D && o)
 tCanvas2D& tCanvas2D::operator=(tCanvas2D && o)
 {
   tCanvas::operator=(std::forward<tCanvas>(o));
-  std::swap(entering_path_mode, o.entering_path_mode);
-  std::swap(in_path_mode, o.in_path_mode);
   return *this;
+}
+
+//----------------------------------------------------------------------
+// tCanvas2D SetDefaultViewport
+//----------------------------------------------------------------------
+template <typename T>
+void tCanvas2D::SetDefaultViewport(T bottom_left_x, T bottom_left_y, T width, T height)
+{
+  default_viewport_offset = Stream().GetPosition();
+  T values[] = { bottom_left_x, bottom_left_y, width, height };
+  this->AppendCommand(eDEFAULT_VIEWPORT, values, 4);
+}
+
+template <typename T>
+void tCanvas2D::SetDefaultViewport(const math::tVector<2, T> &bottom_left, T width, T height)
+{
+  this->SetDefaultViewport(bottom_left.X(), bottom_left.Y(), width, height);
 }
 
 //----------------------------------------------------------------------

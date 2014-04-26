@@ -73,11 +73,9 @@ tCanvas3D::tCanvas3D()
 {
 }
 
-tCanvas3D::tCanvas3D(tCanvas3D && o)
+tCanvas3D::tCanvas3D(tCanvas3D && o) :
+  tCanvas(std::forward<tCanvas>(o))
 {
-  tCanvas(std::forward<tCanvas>(o)),
-          std::swap(entering_path_mode, o.entering_path_mode);
-  std::swap(in_path_mode, o.in_path_mode);
 }
 
 //----------------------------------------------------------------------
@@ -86,8 +84,6 @@ tCanvas3D::tCanvas3D(tCanvas3D && o)
 tCanvas3D& tCanvas3D::operator=(tCanvas3D && o)
 {
   tCanvas::operator=(std::forward<tCanvas>(o));
-  std::swap(entering_path_mode, o.entering_path_mode);
-  std::swap(in_path_mode, o.in_path_mode);
   return *this;
 }
 

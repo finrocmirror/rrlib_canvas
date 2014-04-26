@@ -66,6 +66,7 @@ using namespace rrlib::canvas;
 tCanvas::tCanvas() :
   entering_path_mode(false),
   in_path_mode(false),
+  default_viewport_offset(0),
   buffer(new rrlib::serialization::tMemoryBuffer()),
   stream(new rrlib::serialization::tOutputStream(*buffer))
 {}
@@ -73,9 +74,13 @@ tCanvas::tCanvas() :
 tCanvas::tCanvas(tCanvas && o) :
   entering_path_mode(false),
   in_path_mode(false),
+  default_viewport_offset(0),
   buffer(),
   stream()
 {
+  std::swap(entering_path_mode, o.entering_path_mode);
+  std::swap(in_path_mode, o.in_path_mode);
+  std::swap(default_viewport_offset, o.default_viewport_offset);
   std::swap(buffer, o.buffer);
   std::swap(stream, o.stream);
 }
@@ -85,6 +90,9 @@ tCanvas::tCanvas(tCanvas && o) :
 //----------------------------------------------------------------------
 tCanvas& tCanvas::operator=(tCanvas && o)
 {
+  std::swap(entering_path_mode, o.entering_path_mode);
+  std::swap(in_path_mode, o.in_path_mode);
+  std::swap(default_viewport_offset, o.default_viewport_offset);
   std::swap(buffer, o.buffer);
   std::swap(stream, o.stream);
   return *this;
@@ -109,12 +117,33 @@ void tCanvas::Clear()
 {
   this->buffer->Clear();
   this->stream->Reset(*this->buffer);
+  this->default_viewport_offset = 0;
 }
 
 rrlib::serialization::tOutputStream& rrlib::canvas::operator << (rrlib::serialization::tOutputStream& stream, const tCanvas& canvas)
 {
   canvas.stream->Flush();
-  stream << (*canvas.buffer);
+  if (!canvas.default_viewport_offset)
+  {
+    stream << (*canvas.buffer);
+  }
+  else
+  {
+    assert(canvas.buffer->GetSize());
+    if (*canvas.buffer->GetBufferPointer(0) == static_cast<char>(tCanvasOpCode::eDEFAULT_VIEWPORT_OFFSET))
+    {
+      // Update default viewport offset
+      canvas.buffer->GetBuffer().PutLong(1, canvas.default_viewport_offset);
+    }
+    else
+    {
+      // Prepend default viewport offset
+      stream.WriteLong(9 + canvas.buffer->GetSize());
+      stream << static_cast<uint8_t>(tCanvasOpCode::eDEFAULT_VIEWPORT_OFFSET);
+      stream.WriteLong(canvas.default_viewport_offset);
+      stream.Write(canvas.buffer->GetBuffer(), 0u, canvas.buffer->GetSize());
+    }
+  }
   return stream;
 }
 
@@ -122,5 +151,12 @@ rrlib::serialization::tInputStream& rrlib::canvas::operator >> (rrlib::serializa
 {
   stream >> (*canvas.buffer);
   canvas.stream->Seek(canvas.buffer->GetSize());
+
+  // Restore default viewport offset member variable
+  if (canvas.buffer->GetSize() && *canvas.buffer->GetBufferPointer(0) == static_cast<char>(tCanvasOpCode::eDEFAULT_VIEWPORT_OFFSET))
+  {
+    canvas.default_viewport_offset = canvas.buffer->GetBuffer().GetLong(1);
+  }
+
   return stream;
 }
