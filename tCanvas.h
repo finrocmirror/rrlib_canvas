@@ -267,6 +267,13 @@ protected:
     });
   }
 
+  /*!
+   * Copies contents of provided canvas to this canvas.
+   *
+   * \param canvas Canvas to append
+   */
+  void AppendCanvas(const tCanvas& canvas);
+
   inline rrlib::serialization::tOutputStream &Stream()
   {
     return *this->stream;

@@ -120,6 +120,27 @@ void tCanvas::Clear()
   this->default_viewport_offset = 0;
 }
 
+void tCanvas::AppendCanvas(const tCanvas& canvas)
+{
+  if (this->entering_path_mode)
+  {
+    RRLIB_LOG_PRINT(ERROR, "Just started path mode. Command has no effect.");
+    return;
+  }
+  if (canvas.entering_path_mode)
+  {
+    RRLIB_LOG_PRINT(ERROR, "Provided canvas just started path mode. Command has no effect.");
+    return;
+  }
+  this->in_path_mode = false;
+  this->stream->Flush();
+  if (canvas.default_viewport_offset && (!this->default_viewport_offset) && (!*this->buffer->GetBufferPointer(0) == static_cast<char>(tCanvasOpCode::eDEFAULT_VIEWPORT_OFFSET)))
+  {
+    this->default_viewport_offset = this->buffer->GetSize() + canvas.default_viewport_offset;
+  }
+  this->stream->Write(canvas.buffer->GetBufferPointer(0), canvas.stream->GetPosition());
+}
+
 rrlib::serialization::tOutputStream& rrlib::canvas::operator << (rrlib::serialization::tOutputStream& stream, const tCanvas& canvas)
 {
   canvas.stream->Flush();

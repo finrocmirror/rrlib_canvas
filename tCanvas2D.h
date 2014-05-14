@@ -101,6 +101,16 @@ public:
   inline tCanvas2D& operator=(tCanvas2D && o);
 
   /*!
+   * Copies contents of provided canvas to this canvas.
+   *
+   * \param canvas Canvas to append
+   */
+  inline void Append(const tCanvas2D& canvas)
+  {
+    tCanvas::AppendCanvas(canvas);
+  }
+
+  /*!
    * Set default viewport for viewing this canvas.
    * This is a hint for e.g. finstruct, which part of the canvas to show by default.
    *

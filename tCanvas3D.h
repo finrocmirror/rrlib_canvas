@@ -102,6 +102,16 @@ public:
   inline tCanvas3D& operator=(tCanvas3D && o);
 
   /*!
+   * Copies contents of provided canvas to this canvas.
+   *
+   * \param canvas Canvas to append
+   */
+  inline void Append(const tCanvas3D& canvas)
+  {
+    tCanvas::AppendCanvas(canvas);
+  }
+
+  /*!
    * Set affine transformation of all following operations
    * Overwrites current transform completely.
    * Should only be used when this is not a problem
