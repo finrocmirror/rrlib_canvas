@@ -134,7 +134,7 @@ void tCanvas::AppendCanvas(const tCanvas& canvas)
   }
   this->in_path_mode = false;
   this->stream->Flush();
-  if (canvas.default_viewport_offset && (!this->default_viewport_offset) && (!*this->buffer->GetBufferPointer(0) == static_cast<char>(tCanvasOpCode::eDEFAULT_VIEWPORT_OFFSET)))
+  if (canvas.default_viewport_offset && (!this->default_viewport_offset) && (*this->buffer->GetBufferPointer(0) != static_cast<char>(tCanvasOpCode::eDEFAULT_VIEWPORT_OFFSET)))
   {
     this->default_viewport_offset = this->buffer->GetSize() + canvas.default_viewport_offset;
   }
@@ -171,7 +171,9 @@ rrlib::serialization::tOutputStream& rrlib::canvas::operator << (rrlib::serializ
 rrlib::serialization::tInputStream& rrlib::canvas::operator >> (rrlib::serialization::tInputStream& stream, tCanvas& canvas)
 {
   stream >> (*canvas.buffer);
-  canvas.stream->Seek(canvas.buffer->GetSize());
+  size_t buffer_size = canvas.buffer->GetSize();
+  canvas.stream->Reset();
+  canvas.stream->Seek(buffer_size);
 
   // Restore default viewport offset member variable
   if (canvas.buffer->GetSize() && *canvas.buffer->GetBufferPointer(0) == static_cast<char>(tCanvasOpCode::eDEFAULT_VIEWPORT_OFFSET))
