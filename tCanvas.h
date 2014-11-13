@@ -132,8 +132,7 @@ public:
   }
   void SetColor(uint32_t rgba)
   {
-    this->SetColor(rgba >> 24 & 0xFF, rgba >> 16 & 0xFF, rgba >> 8 & 0xFF);
-    this->SetAlpha(rgba & 0xFF);
+    this->SetColor(rgba >> 24 & 0xFF, rgba >> 16 & 0xFF, rgba >> 8 & 0xFF, rgba & 0xFF);
   }
 
   /*!
@@ -149,6 +148,10 @@ public:
     this->SetEdgeColor(r, g, b);
     this->SetAlpha(a);
   }
+  void SetEdgeColor(uint32_t rgba)
+  {
+    this->SetEdgeColor(rgba >> 24 & 0xFF, rgba >> 16 & 0xFF, rgba >> 8 & 0xFF, rgba & 0xFF);
+  }
 
   /*!
    * Set the canvas' color for filling
@@ -162,6 +165,10 @@ public:
   {
     this->SetFillColor(r, g, b);
     this->SetAlpha(a);
+  }
+  void SetFillColor(uint32_t rgba)
+  {
+    this->SetFillColor(rgba >> 24 & 0xFF, rgba >> 16 & 0xFF, rgba >> 8 & 0xFF, rgba & 0xFF);
   }
 
   /*!
