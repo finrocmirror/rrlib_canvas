@@ -130,6 +130,11 @@ public:
     this->SetColor(r, g, b);
     this->SetAlpha(a);
   }
+  void SetColor(uint32_t rgba)
+  {
+    this->SetColor(rgba >> 24 & 0xFF, rgba >> 16 & 0xFF, rgba >> 8 & 0xFF);
+    this->SetAlpha(rgba & 0xFF);
+  }
 
   /*!
    * Set the canvas' color for edges
