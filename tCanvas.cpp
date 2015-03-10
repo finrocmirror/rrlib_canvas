@@ -154,7 +154,10 @@ rrlib::serialization::tOutputStream& rrlib::canvas::operator << (rrlib::serializ
     if (*canvas.buffer->GetBufferPointer(0) == static_cast<char>(tCanvasOpCode::eDEFAULT_VIEWPORT_OFFSET))
     {
       // Update default viewport offset
-      canvas.buffer->GetBuffer().PutLong(1, canvas.default_viewport_offset);
+      stream.WriteLong(canvas.buffer->GetSize());
+      stream << static_cast<uint8_t>(tCanvasOpCode::eDEFAULT_VIEWPORT_OFFSET);
+      stream.WriteLong(canvas.default_viewport_offset);
+      stream.Write(canvas.buffer->GetBuffer(), 9u, canvas.buffer->GetSize() - 9u);
     }
     else
     {
