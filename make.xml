@@ -8,6 +8,7 @@
       tCanvas.cpp
       tCanvas2D.h
       tCanvas3D.h
+      rtti.cpp
     </sources>
   </library>
   
